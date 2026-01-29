@@ -7,11 +7,89 @@ class SplashView extends GetView<SplashController> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
-        child: Text(
-          'QSR Kiosk',
-          style: TextStyle(fontSize: 28),
+        child: AnimatedBuilder(
+          animation: controller.animationController,
+          builder: (context, child) {
+            return Opacity(
+              opacity: controller.fadeAnimation.value,
+              child: Transform.scale(
+                scale: controller.scaleAnimation.value,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // 🔰 Logo
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.asset(
+                          'assets/images/logo/logo.png',
+                          width: 120,
+                          height: 120,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // 🏷️ App Name
+                    const Text(
+                      'QSR Kiosk',
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.1,
+                        color: Colors.black87,
+                      ),
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    // 📝 Tagline
+                    Text(
+                      'Fast • Easy • Self Ordering',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    // ⏳ Loading Indicator (API progress)
+                    Obx(() {
+                      if (controller.isLoading.value) {
+                        return const CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          valueColor: AlwaysStoppedAnimation(Colors.deepOrange),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

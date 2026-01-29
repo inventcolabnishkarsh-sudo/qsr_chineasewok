@@ -1,9 +1,8 @@
 class ApiConstants {
   ApiConstants._();
 
-  static const baseUrl = 'https://api.yourdomain.com';
+  static const baseUrl = 'https://172.16.4.31:9902/api';
 
-  static const products = '/products';
-  static const categories = '/categories';
-  static const createOrder = '/orders';
+  static const manageOutlet = '/ManageOutlet/GetOutletMenusForPOS?OutletId';
+
 }
