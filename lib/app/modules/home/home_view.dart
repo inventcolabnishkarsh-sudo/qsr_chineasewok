@@ -82,13 +82,17 @@ class HomeView extends GetView<HomeController> {
                       OrderCard(
                         title: 'Take Away',
                         imagePath: 'assets/images/takeaway.jpg',
-                        onTap: () {},
+                        onTap: () {
+                          controller.onOrderSelected(OrderType.takeaway);
+                        },
                       ),
                       const SizedBox(width: 20),
                       OrderCard(
                         title: 'Dine In',
                         imagePath: 'assets/images/dinein.jpg',
-                        onTap: () {},
+                        onTap: () {
+                          controller.onOrderSelected(OrderType.dineIn);
+                        },
                       ),
                     ],
                   ),
@@ -152,7 +156,11 @@ class HomeView extends GetView<HomeController> {
         itemCount: controller.ads.length,
         itemBuilder: (context, index) {
           return SizedBox.expand(
-            child: Image.asset(controller.ads[index], fit: BoxFit.fill),
+            child: Image.asset(
+              controller.ads[index],
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.low,
+            ),
           );
         },
       ),

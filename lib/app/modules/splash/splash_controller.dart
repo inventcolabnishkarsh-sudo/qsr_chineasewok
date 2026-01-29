@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/api_constants.dart';
@@ -14,14 +13,12 @@ class SplashController extends GetxController
   late Animation<double> fadeAnimation;
 
   final DioClient _dioClient = DioClient();
-
   final RxBool isLoading = true.obs;
 
   @override
   void onInit() {
     super.onInit();
 
-    // 🎞️ Animation
     animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -36,46 +33,47 @@ class SplashController extends GetxController
     );
 
     animationController.forward();
+  }
 
-    // 🚀 Load initial data
+  /// ✅ SAFE PLACE FOR API + NAVIGATION
+  @override
+  void onReady() {
+    super.onReady();
     _fetchOutletMenu();
   }
 
   Future<void> _fetchOutletMenu() async {
-    try {
-      // 🧠 If already cached, skip API
-      final menuService = Get.find<MenuDataService>();
-      if (menuService.hasData) {
-        AppLogger.log('Menu data already in memory. Skipping API call.');
-        isLoading.value = false;
-        Get.offAllNamed('/home');
-        return;
-      }
+    final menuService = Get.find<MenuDataService>();
 
+    // ✅ CACHE CHECK
+    if (menuService.hasData) {
+      AppLogger.log('Menu data already available → skipping API');
+
+      isLoading.value = false;
+
+      // 🔐 SAFE NAVIGATION
+      _goHome();
+      return;
+    }
+
+    try {
       final url = '${ApiConstants.manageOutlet}=1';
 
-      // 🔵 REQUEST LOG
       AppLogger.divider('API REQUEST');
       AppLogger.log('GET ${ApiConstants.baseUrl}$url');
 
       final response = await _dioClient.dio.get(url);
 
-      // 🟢 RESPONSE LOG
       AppLogger.divider('API RESPONSE');
       AppLogger.log('Status Code: ${response.statusCode}');
-      AppLogger.log('Headers: ${response.headers.map}');
-      AppLogger.log('Body:');
       AppLogger.json(response.data);
 
       if (response.statusCode == 200) {
-        // 🧠 STORE DATA IN MEMORY
-        menuService.setData(response.data);
-        AppLogger.log('Data stored in MenuDataService (memory)');
-
-        await Future.delayed(const Duration(milliseconds: 500));
+        await menuService.setData(response.data);
+        AppLogger.log('Menu data saved in cache');
 
         isLoading.value = false;
-        Get.offAllNamed('/home');
+        _goHome();
       } else {
         throw ApiException(
           'Failed to load outlet data',
@@ -83,13 +81,18 @@ class SplashController extends GetxController
         );
       }
     } catch (e, stack) {
-      // 🔴 ERROR LOG
       AppLogger.divider('API ERROR');
       AppLogger.error(e);
       AppLogger.error(stack);
-
       _handleError(e);
     }
+  }
+
+  /// 🧭 NAVIGATION (POST FRAME)
+  void _goHome() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Get.offAllNamed('/home');
+    });
   }
 
   void _handleError(Object error) {

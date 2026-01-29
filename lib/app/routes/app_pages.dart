@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import '../modules/groupmenu/group_menu_binding.dart';
+import '../modules/groupmenu/group_menu_view.dart';
 import '../modules/home/home_binding.dart';
 import '../modules/home/home_view.dart';
 import '../modules/splash/splash_binding.dart';
@@ -16,6 +18,11 @@ class AppPages {
       name: AppRoutes.home,
       page: () => const HomeView(),
       binding: HomeBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.groupMenu,
+      page: () => const GroupMenuView(),
+      binding: GroupMenuBinding(),
     ),
   ];
 }

@@ -8,7 +8,9 @@ import 'app/routes/app_routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Get.put<MenuDataService>(MenuDataService(), permanent: true);
+
+  final menuService = Get.put(MenuDataService(), permanent: true);
+  await menuService.loadFromFile(); // ✅ LOAD FILE FIRST
 
   /// 🔹 Full-screen immersive kiosk mode
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);

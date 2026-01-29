@@ -1,4 +1,4 @@
-package com.example.qsr_chineasewok_kiosk
+package com.lipiqsr.chinesewok
 
 import io.flutter.embedding.android.FlutterActivity
 
