@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../home/home_controller.dart';
 import '../splash/menu_data_service.dart';
+import 'model/cart_item.dart';
 
 class GroupMenuController extends GetxController {
   late final OrderType orderType;
@@ -14,12 +16,29 @@ class GroupMenuController extends GetxController {
 
   final Map<int, Uint8List> groupImages = {};
 
+  final ScrollController scrollController = ScrollController();
+  final RxBool showTopButton = false.obs;
+
+  /// 🔑 cart key = menuId_portion (e.g. 12_half)
+  final RxMap<String, CartItem> cart = <String, CartItem>{}.obs;
+
+  String _cartKey(int menuId, String portion) => '${menuId}_$portion';
+
+  /// 🧮 Cart totals
+  int get totalItems => cart.values.fold(0, (sum, item) => sum + item.quantity);
+
+  int get totalAmount => cart.values.fold(0, (sum, item) => sum + item.total);
+
+  bool get hasItems => cart.isNotEmpty;
+
   @override
   void onInit() {
     super.onInit();
 
     orderType = Get.arguments as OrderType;
-
+    scrollController.addListener(() {
+      showTopButton.value = scrollController.offset > 300;
+    });
     final menuService = Get.find<MenuDataService>();
     groups = menuService.groups;
 
@@ -40,9 +59,17 @@ class GroupMenuController extends GetxController {
     }
   }
 
+  void scrollToTop() {
+    scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOut,
+    );
+  }
+
   void onGroupSelected(int index) {
     selectedGroupIndex.value = index;
-    selectedCategoryIndex.value = -1; // 🔥 All selected
+    scrollToTop();
   }
 
   void onCategorySelected(int index) {
@@ -106,5 +133,72 @@ class GroupMenuController extends GetxController {
     // sort by serves ascending
     final sortedKeys = grouped.keys.toList()..sort();
     return {for (final k in sortedKeys) k: grouped[k]!};
+  }
+
+  bool get shouldShowServesHeader {
+    final grouped = menuItemsGroupedByServes;
+
+    // If only one group → no need to show header
+    if (grouped.length <= 1) return false;
+
+    // If serves keys are invalid (0 or null)
+    final validServes = grouped.keys.where((s) => s > 0).toList();
+    return validServes.isNotEmpty;
+  }
+
+  /// ➕ ADD (HALF / FULL)
+  void addToCart(
+    Map<String, dynamic> item, {
+    required String portion, // half | full
+  }) {
+    final menu = item['Menu'];
+    final int menuId = menu['Id'];
+    final String name = menu['MenuItemName'];
+
+    final int price = portion == 'half' ? item['HalfPrice'] : item['Price'];
+
+    final key = _cartKey(menuId, portion);
+
+    if (cart.containsKey(key)) {
+      cart[key]!.quantity++;
+      cart.refresh();
+    } else {
+      cart[key] = CartItem(
+        menuId: menuId,
+        name: '$name (${portion.toUpperCase()})',
+        price: price,
+        portion: portion,
+      );
+    }
+  }
+
+  /// ➖ REMOVE
+  void removeFromCart(int menuId, String portion) {
+    final key = _cartKey(menuId, portion);
+
+    if (!cart.containsKey(key)) return;
+
+    if (cart[key]!.quantity > 1) {
+      cart[key]!.quantity--;
+      cart.refresh();
+    } else {
+      cart.remove(key);
+    }
+  }
+
+  /// 🔢 Quantity
+  int getQuantity(int menuId, String portion) {
+    return cart[_cartKey(menuId, portion)]?.quantity ?? 0;
+  }
+
+  /// 🧹 Clear cart
+  void clearCart() {
+    cart.clear();
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
   }
 }
