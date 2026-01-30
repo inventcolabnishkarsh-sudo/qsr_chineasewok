@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import '../modules/finalizeorder/finalize_order_binding.dart';
+import '../modules/finalizeorder/finalize_order_view.dart';
 import '../modules/groupmenu/group_menu_binding.dart';
 import '../modules/groupmenu/group_menu_view.dart';
 import '../modules/home/home_binding.dart';
@@ -30,6 +32,11 @@ class AppPages {
       name: AppRoutes.orderSummary,
       page: () => const OrderSummaryView(),
       binding: OrderSummaryBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.finalizeOrder,
+      page: () => const FinalizeOrderView(),
+      binding: FinalizeOrderBinding(),
     ),
   ];
 }

@@ -5,6 +5,7 @@ import 'package:qsr_chineasewok_kiosk/app/modules/groupmenu/widgets/menu_item_ca
 import 'group_menu_controller.dart';
 import 'widgets/group_cards.dart';
 import 'widgets/serversheader.dart';
+import 'package:collection/collection.dart';
 
 class GroupMenuView extends GetView<GroupMenuController> {
   const GroupMenuView({super.key});

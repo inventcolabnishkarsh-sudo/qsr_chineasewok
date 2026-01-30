@@ -212,11 +212,23 @@ class GroupMenuController extends GetxController {
       /// 🔁 INCREMENT QUANTITY
       cart[key]!.quantity++;
     } else {
+      Uint8List? imageBytes;
+      final base64 = menu['ImageBase64'];
+      if (base64 != null && base64.toString().isNotEmpty) {
+        try {
+          imageBytes = base64Decode(base64);
+        } catch (_) {}
+      }
+
       cart[key] = CartItem(
         menuId: menuId,
-        name: '$comboName (${selectedNames.join(', ')})',
+        name: comboName,
         price: price,
         portion: 'combo',
+        imageBytes: imageBytes,
+        serves: menu['Serves'],
+        isVeg: menu['VegNonVeg'] == 1,
+        comboItems: selectedNames,
       );
     }
 
@@ -241,11 +253,22 @@ class GroupMenuController extends GetxController {
       cart[key]!.quantity++;
       cart.refresh();
     } else {
+      Uint8List? imageBytes;
+      final base64 = menu['ImageBase64'];
+      if (base64 != null && base64.toString().isNotEmpty) {
+        try {
+          imageBytes = base64Decode(base64);
+        } catch (_) {}
+      }
+
       cart[key] = CartItem(
         menuId: menuId,
         name: '$name (${portion.toUpperCase()})',
         price: price,
         portion: portion,
+        imageBytes: imageBytes,
+        serves: null,
+        isVeg: menu['VegNonVeg'] == 1,
       );
     }
   }

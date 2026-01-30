@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:qsr_chineasewok_kiosk/app/modules/order_summary/widgets/bill_summary.dart';
 import 'package:qsr_chineasewok_kiosk/app/modules/order_summary/widgets/cartitemcard.dart';
 import 'package:qsr_chineasewok_kiosk/app/modules/order_summary/widgets/header.dart';
+import '../../../core/globalwidgets/promo_video_box.dart';
 import 'order_summary_controller.dart';
 
 class OrderSummaryView extends GetView<OrderSummaryController> {
@@ -18,29 +19,34 @@ class OrderSummaryView extends GetView<OrderSummaryController> {
         children: [
           /// 🔝 HEADER
           Header(orderType),
+          Divider(height: 1, thickness: 1.5, color: Colors.red),
+
+          /// 🎥 VIDEO BOX (ONLY IF ITEMS < 3)
+          Obx(() {
+            return Visibility(
+              visible: controller.items.length < 3,
+              maintainState: true,
+              maintainAnimation: true,
+              maintainSize: false,
+              child: const PromoVideoBox(),
+            );
+          }),
 
           /// 🧾 ITEMS
           Expanded(
             child: Obx(() {
               return ListView.builder(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 itemCount: controller.items.length,
+
                 itemBuilder: (context, index) {
-                  final item = controller.items[index];
-                  return CartItemCard(item);
+                  if (index < controller.items.length) {
+                    final item = controller.items[index];
+                    return CartItemCard(item);
+                  }
                 },
               );
             }),
-          ),
-
-          /// ➕ ADD MORE
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: OutlinedButton.icon(
-              onPressed: () => Get.back(),
-              icon: const Icon(Icons.add),
-              label: const Text('Add more items'),
-            ),
           ),
 
           /// 💰 BILL SUMMARY

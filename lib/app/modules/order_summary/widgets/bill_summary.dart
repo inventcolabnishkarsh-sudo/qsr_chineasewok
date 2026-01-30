@@ -12,10 +12,39 @@ class BillSummary extends StatelessWidget {
     final controller = Get.find<OrderSummaryController>();
 
     return Obx(() {
-      return Stack(
-        alignment: Alignment.topCenter,
+      return Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          /// 🧾 YOUR EXISTING SUMMARY CARD
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => Get.back(),
+              child: Container(
+                height: 44,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.red),
+                  color: Colors.white, // 👈 important difference
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.add, color: Colors.red, size: 20),
+                    SizedBox(width: 6),
+                    Text(
+                      'Add more items',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
           Container(
             margin: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -34,7 +63,8 @@ class BillSummary extends StatelessWidget {
               children: [
                 /// 🟧 HEADER
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+
                   decoration: const BoxDecoration(
                     color: Color(0xFFE67E22),
                     borderRadius: BorderRadius.vertical(
@@ -65,7 +95,8 @@ class BillSummary extends StatelessWidget {
 
                 /// 🎟️ COUPON INPUT / STATUS
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+
                   child: controller.isCouponApplied.value
                       ? _AppliedCoupon(controller)
                       : _CouponInput(controller),
@@ -85,8 +116,9 @@ class BillSummary extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
-                    vertical: 14,
+                    vertical: 10,
                   ),
+
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -104,6 +136,85 @@ class BillSummary extends StatelessWidget {
                           fontSize: 22,
                           fontWeight: FontWeight.w900,
                           color: Color(0xFFE67E22),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+
+                /// 🔐 AUTHORIZATION TEXT
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
+
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'By placing this order, you confirm the items and prices shown above.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade700,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+
+                /// ✅ ACTION BUTTONS
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 12),
+                  child: Row(
+                    children: [
+                      /// ❌ CANCEL BUTTON
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            // Optional: confirmation dialog
+                            Get.back(); // or controller.clearCart();
+                          },
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: Colors.grey.shade400),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 12),
+
+                      /// ✅ PLACE ORDER BUTTON
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: controller.items.isEmpty
+                              ? null
+                              : controller.placeOrder,
+
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE67E22),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 3,
+                          ),
+                          child: const Text(
+                            'Place Order',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -128,7 +239,6 @@ class BillSummary extends StatelessWidget {
               Colors.pink,
             ],
           ),
-
         ],
       );
     });
@@ -142,7 +252,8 @@ class BillSummary extends StatelessWidget {
     bool highlight = false,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -249,13 +360,10 @@ class _AppliedCoupon extends StatelessWidget {
           onPressed: controller.removeCoupon,
           style: TextButton.styleFrom(
             foregroundColor: Colors.deepOrange,
-            textStyle: const TextStyle(
-              fontWeight: FontWeight.w700,
-            ),
+            textStyle: const TextStyle(fontWeight: FontWeight.w700),
           ),
           child: const Text('🗑️ Remove Coupon'),
         ),
-
       ],
     );
   }

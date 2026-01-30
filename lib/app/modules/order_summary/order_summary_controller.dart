@@ -1,6 +1,7 @@
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../routes/app_routes.dart';
 import '../groupmenu/group_menu_controller.dart';
 import '../groupmenu/model/cart_item.dart';
 import '../home/home_controller.dart';
@@ -96,9 +97,51 @@ class OrderSummaryController extends GetxController {
     isApplyEnabled.value = false;
   }
 
+  /// ✏️ MODIFY COMBO
+  void modifyCombo(CartItem item) {
+    // 1️⃣ Remove one quantity of this combo
+    groupController.removeOneCombo(item.menuId);
+
+    // 2️⃣ Find original combo menu item
+    final comboItem = groupController.allMenuItems.firstWhereOrNull(
+      (e) =>
+          e['Menu'] != null &&
+          e['Menu']['Id'] == item.menuId &&
+          e['Menu']['Bases'] != null,
+    );
+
+    if (comboItem == null) {
+      Get.snackbar(
+        'Modify Failed',
+        'Unable to load combo details',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    // 3️⃣ Open combo customizer again
+    groupController.openComboCustomizer(comboItem);
+  }
+
+  void placeOrder() {
+    Get.toNamed(
+      AppRoutes.finalizeOrder,
+      arguments: {
+        'orderType': orderType,
+        'cart': cart.values.toList(),
+        'subTotal': subTotal,
+        'gst': gstAmount,
+        'discount': couponDiscount,
+        'payableAmount': payableAmount,
+      },
+    );
+  }
+
   @override
   void onClose() {
     couponController.dispose();
+    confettiController.dispose(); // 👈 add this
     super.onClose();
   }
 }

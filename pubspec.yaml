@@ -41,6 +41,8 @@ dependencies:
   path_provider: ^2.1.5
   google_fonts: ^8.0.0
   confetti: ^0.8.0
+  video_player: ^2.10.1
+  chewie: ^1.13.0
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +83,7 @@ flutter:
     - assets/images/ads/ads2.jpg
     - assets/images/ads/ads3.jpg
     - assets/images/homebackground.jpg
+    - assets/videos/promo.mp4
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
