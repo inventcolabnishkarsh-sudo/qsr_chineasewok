@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:qsr_chineasewok_kiosk/app/modules/order_summary/widgets/bill_summary.dart';
+import 'package:qsr_chineasewok_kiosk/app/modules/order_summary/widgets/cartitemcard.dart';
+import 'package:qsr_chineasewok_kiosk/app/modules/order_summary/widgets/header.dart';
 import 'order_summary_controller.dart';
 
 class OrderSummaryView extends GetView<OrderSummaryController> {
@@ -7,82 +10,41 @@ class OrderSummaryView extends GetView<OrderSummaryController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Order Summary'),
-        backgroundColor: const Color(0xFFF47920),
-      ),
+    final orderType = controller.orderType;
 
+    return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       body: Column(
         children: [
-          /// 🧾 LIST
+          /// 🔝 HEADER
+          Header(orderType),
+
+          /// 🧾 ITEMS
           Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: controller.items.length,
-              separatorBuilder: (_, __) => const Divider(),
-              itemBuilder: (context, index) {
-                final item = controller.items[index];
+            child: Obx(() {
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: controller.items.length,
+                itemBuilder: (context, index) {
+                  final item = controller.items[index];
+                  return CartItemCard(item);
+                },
+              );
+            }),
+          ),
 
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    /// NAME + PORTION
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.name,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          Text(
-                            '₹${item.price} × ${item.quantity}',
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    /// TOTAL
-                    Text(
-                      '₹${item.total}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                );
-              },
+          /// ➕ ADD MORE
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: OutlinedButton.icon(
+              onPressed: () => Get.back(),
+              icon: const Icon(Icons.add),
+              label: const Text('Add more items'),
             ),
           ),
 
-          /// 💰 FOOTER
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(color: Color(0xFFF6C343)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Items: ${controller.totalItems}',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Total Amount: ₹${controller.totalAmount}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          /// 💰 BILL SUMMARY
+          BillSummary(),
         ],
       ),
     );

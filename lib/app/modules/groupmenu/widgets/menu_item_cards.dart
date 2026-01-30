@@ -58,14 +58,14 @@ class MenuItemCard extends StatelessWidget {
               Expanded(
                 child: (showServesHeader && isCombo)
                     ? Text(
-                  menu['ComboTitle'] ?? '',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF243A8F),
-                  ),
-                )
+                        menu['ComboTitle'] ?? '',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF243A8F),
+                        ),
+                      )
                     : const SizedBox.shrink(),
               ),
 
@@ -82,9 +82,9 @@ class MenuItemCard extends StatelessWidget {
               child: imageBytes != null
                   ? Image.memory(imageBytes!, fit: BoxFit.contain)
                   : Image.asset(
-                'assets/images/menu_placeholder.png',
-                fit: BoxFit.contain,
-              ),
+                      'assets/images/menu_placeholder.png',
+                      fit: BoxFit.contain,
+                    ),
             ),
           ),
 
@@ -113,7 +113,7 @@ class MenuItemCard extends StatelessWidget {
           /// 💰 PRICE
           const SizedBox(height: 12),
 
-          if (isHalfAvailable)
+          if (isHalfAvailable && !isCombo)
             Row(
               children: [
                 /// HALF
@@ -162,16 +162,23 @@ class MenuItemCard extends StatelessWidget {
                 ),
               ],
             ),
-          if (!isHalfAvailable)
+          if (!isHalfAvailable || isCombo)
             Obx(() {
-              final qty = controller.getQuantity(menuId, 'full');
+              final qty = isCombo
+                  ? controller.getComboQuantity(menuId)
+                  : controller.getQuantity(menuId, 'full');
 
               if (qty == 0) {
                 return SizedBox(
                   height: 48,
                   child: ElevatedButton(
-                    onPressed: () =>
-                        controller.addToCart(item, portion: 'full'),
+                    onPressed: () {
+                      if (isCombo) {
+                        controller.openComboCustomizer(item);
+                      } else {
+                        controller.addToCart(item, portion: 'full');
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFF6C343),
                       shape: RoundedRectangleBorder(
@@ -200,8 +207,14 @@ class MenuItemCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     IconButton(
-                      onPressed: () =>
-                          controller.removeFromCart(menuId, 'full'),
+                      onPressed: () {
+                        if (isCombo) {
+                          controller.removeOneCombo(menuId); // ✅ FIX
+                        } else {
+                          controller.removeFromCart(menuId, 'full');
+                        }
+                      },
+
                       icon: const Icon(Icons.remove),
                     ),
                     Text(
@@ -212,8 +225,14 @@ class MenuItemCard extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      onPressed: () =>
-                          controller.addToCart(item, portion: 'full'),
+                      onPressed: () {
+                        if (isCombo) {
+                          // 👈 re-open customizer for NEW combo
+                          controller.openComboCustomizer(item);
+                        } else {
+                          controller.addToCart(item, portion: 'full');
+                        }
+                      },
                       icon: const Icon(Icons.add),
                     ),
                   ],

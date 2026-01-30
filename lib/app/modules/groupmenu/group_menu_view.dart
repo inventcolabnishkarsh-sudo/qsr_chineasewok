@@ -85,9 +85,7 @@ class GroupMenuView extends GetView<GroupMenuController> {
 
                   /// 🛒 VIEW ORDERS
                   InkWell(
-                    onTap: () {
-                      // TODO: navigate to order summary
-                    },
+                    onTap: controller.goToOrderSummary,
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
                       padding: const EdgeInsets.symmetric(

@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:qsr_chineasewok_kiosk/app/modules/groupmenu/widgets/combo_customize_view.dart';
+import '../../routes/app_routes.dart';
 import '../home/home_controller.dart';
 import '../splash/menu_data_service.dart';
 import 'model/cart_item.dart';
@@ -30,6 +32,12 @@ class GroupMenuController extends GetxController {
   int get totalAmount => cart.values.fold(0, (sum, item) => sum + item.total);
 
   bool get hasItems => cart.isNotEmpty;
+
+  int getComboQuantity(int menuId) {
+    return cart.values
+        .where((e) => e.menuId == menuId && e.portion == 'combo')
+        .fold(0, (sum, e) => sum + e.quantity);
+  }
 
   @override
   void onInit() {
@@ -146,6 +154,76 @@ class GroupMenuController extends GetxController {
     return validServes.isNotEmpty;
   }
 
+  void openComboCustomizer(Map<String, dynamic> item) {
+    // ✅ FIX: Bases are inside Menu
+    final basesNode = item['Menu']?['Bases'];
+
+    if (basesNode == null ||
+        basesNode['\$values'] == null ||
+        (basesNode['\$values'] as List).isEmpty) {
+      Get.snackbar(
+        'Combo Error',
+        'No base options available',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    final List<Map<String, dynamic>> bases = List<Map<String, dynamic>>.from(
+      basesNode['\$values'],
+    );
+
+    Get.dialog(
+      ComboCustomizeView(comboItem: item, bases: bases),
+      barrierDismissible: false,
+    );
+  }
+
+  void addComboToCart(
+    Map<String, dynamic> comboItem,
+    Map<int, int> selections,
+  ) {
+    final menu = comboItem['Menu'];
+    final int menuId = menu['Id'];
+    final String comboName = menu['MenuItemName'];
+    final int price = comboItem['Price'];
+
+    final bases = List<Map<String, dynamic>>.from(menu['Bases']['\$values']);
+
+    /// Resolve selected menu names
+    final selectedNames = <String>[];
+
+    for (final base in bases) {
+      final int baseId = base['BaseId'];
+      final int selectedMenuId = selections[baseId]!;
+
+      final menus = List<Map<String, dynamic>>.from(
+        base['BaseMenus']['\$values'],
+      );
+
+      final selectedMenu = menus.firstWhere((m) => m['Id'] == selectedMenuId);
+      selectedNames.add(selectedMenu['MenuItemName']);
+    }
+
+    final key = '${menuId}_combo_${selections.values.join("_")}';
+
+    if (cart.containsKey(key)) {
+      /// 🔁 INCREMENT QUANTITY
+      cart[key]!.quantity++;
+    } else {
+      cart[key] = CartItem(
+        menuId: menuId,
+        name: '$comboName (${selectedNames.join(', ')})',
+        price: price,
+        portion: 'combo',
+      );
+    }
+
+    /// 🔥 FORCE UI UPDATE
+    cart.refresh();
+  }
+
   /// ➕ ADD (HALF / FULL)
   void addToCart(
     Map<String, dynamic> item, {
@@ -186,6 +264,29 @@ class GroupMenuController extends GetxController {
     }
   }
 
+  void removeOneCombo(int menuId) {
+    MapEntry<String, CartItem>? comboEntry;
+
+    for (final entry in cart.entries) {
+      if (entry.value.menuId == menuId && entry.value.portion == 'combo') {
+        comboEntry = entry;
+        break;
+      }
+    }
+
+    if (comboEntry == null) return;
+
+    final key = comboEntry.key;
+
+    if (cart[key]!.quantity > 1) {
+      cart[key]!.quantity--;
+    } else {
+      cart.remove(key); // qty == 1 → clear combo
+    }
+
+    cart.refresh();
+  }
+
   /// 🔢 Quantity
   int getQuantity(int menuId, String portion) {
     return cart[_cartKey(menuId, portion)]?.quantity ?? 0;
@@ -194,6 +295,22 @@ class GroupMenuController extends GetxController {
   /// 🧹 Clear cart
   void clearCart() {
     cart.clear();
+  }
+
+  void goToOrderSummary() {
+    if (cart.isEmpty) return;
+
+    Get.toNamed(
+      AppRoutes.orderSummary,
+      arguments: {'orderType': orderType, 'cart': cart},
+    );
+  }
+
+  void increaseExistingCartItem(String cartKey) {
+    if (!cart.containsKey(cartKey)) return;
+
+    cart[cartKey]!.quantity++;
+    cart.refresh();
   }
 
   @override
