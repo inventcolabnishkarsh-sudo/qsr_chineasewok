@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:qsr_chineasewok_kiosk/app/modules/finalizeorder/widegts/customercheckincard.dart';
 import '../home/home_controller.dart';
 import '../order_summary/widgets/header.dart'; // for OrderType enum
 
@@ -24,18 +25,7 @@ class FinalizeOrderView extends StatelessWidget {
           const Divider(height: 1, thickness: 1.5, color: Colors.red),
 
           /// 📦 CONTENT
-          Expanded(
-            child: Center(
-              child: Text(
-                'Finalize Order Screen\n\n₹${payableAmount.toStringAsFixed(2)}',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
+          Expanded(child: CustomerCheckInCard()),
         ],
       ),
     );
