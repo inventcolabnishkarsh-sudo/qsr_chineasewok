@@ -99,10 +99,6 @@ class OrderSummaryController extends GetxController {
 
   /// ✏️ MODIFY COMBO
   void modifyCombo(CartItem item) {
-    // 1️⃣ Remove one quantity of this combo
-    groupController.removeOneCombo(item.menuId);
-
-    // 2️⃣ Find original combo menu item
     final comboItem = groupController.allMenuItems.firstWhereOrNull(
       (e) =>
           e['Menu'] != null &&
@@ -110,18 +106,12 @@ class OrderSummaryController extends GetxController {
           e['Menu']['Bases'] != null,
     );
 
-    if (comboItem == null) {
-      Get.snackbar(
-        'Modify Failed',
-        'Unable to load combo details',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return;
-    }
+    if (comboItem == null) return;
 
-    // 3️⃣ Open combo customizer again
-    groupController.openComboCustomizer(comboItem);
+    groupController.openComboCustomizer(
+      comboItem,
+      editingItem: item, // 👈 important
+    );
   }
 
   void placeOrder() {

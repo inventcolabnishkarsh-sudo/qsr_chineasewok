@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../app/modules/order_summary/order_summary_controller.dart';
 
 class NumericKeypad extends StatelessWidget {
   final TextEditingController controller;
@@ -12,6 +14,8 @@ class NumericKeypad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final orderController = Get.find<OrderSummaryController>();
+
     return Padding(
       padding: const EdgeInsets.only(top: 28),
       child: GridView.builder(
@@ -25,14 +29,19 @@ class NumericKeypad extends StatelessWidget {
           childAspectRatio: 2.2,
         ),
         itemBuilder: (context, index) {
+          /// CLEAR
           if (index == 9) {
             return _actionKey(
               label: 'C',
               color: Colors.red,
-              onTap: () => controller.clear(),
+              onTap: () {
+                controller.clear();
+                orderController.onCouponChanged('');
+              },
             );
           }
 
+          /// BACKSPACE
           if (index == 11) {
             return _iconKey(
               icon: Icons.backspace_outlined,
@@ -43,18 +52,21 @@ class NumericKeypad extends StatelessWidget {
                     0,
                     controller.text.length - 1,
                   );
+                  orderController.onCouponChanged(controller.text);
                 }
               },
             );
           }
 
+          /// NUMBERS
           final number = index == 10 ? '0' : '${index + 1}';
 
           return _numberKey(
             label: number,
             onTap: () {
-              if (controller.text.length < 10) {
+              if (controller.text.length < maxLength) {
                 controller.text += number;
+                orderController.onCouponChanged(controller.text);
               }
             },
           );
@@ -62,6 +74,8 @@ class NumericKeypad extends StatelessWidget {
       ),
     );
   }
+
+  // ---------------- UI KEYS ----------------
 
   Widget _numberKey({required String label, required VoidCallback onTap}) {
     return _baseKey(
@@ -135,7 +149,7 @@ class NumericKeypad extends StatelessWidget {
             ),
           ],
         ),
-        child: child, // ✅ THIS WAS MISSING
+        child: child,
       ),
     );
   }

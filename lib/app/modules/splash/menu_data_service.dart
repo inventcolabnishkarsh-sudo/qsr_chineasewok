@@ -9,7 +9,6 @@ class MenuDataService extends GetxService {
   Map<String, dynamic>? _menuData;
 
   bool get hasData => _menuData != null;
-
   Map<String, dynamic>? get rawData => _menuData;
 
   /// 🔹 Extract GROUPS safely
@@ -28,16 +27,28 @@ class MenuDataService extends GetxService {
     return File('${dir.path}/$_fileName');
   }
 
+  /// 🖨️ PRINT where the file is stored
+  Future<void> printStoragePath() async {
+    final file = await _getLocalFile();
+    print('📂 Menu data file stored at: ${file.path}');
+  }
+
   /// 💾 Save API response to FILE
   Future<void> setData(Map<String, dynamic> data) async {
     _menuData = data;
     final file = await _getLocalFile();
     await file.writeAsString(jsonEncode(data), flush: true);
+
+    // 👇 print path after saving
+    print('✅ Menu data saved at: ${file.path}');
   }
 
   /// 📥 Load from FILE on app start
   Future<void> loadFromFile() async {
     final file = await _getLocalFile();
+
+    // 👇 print path on load
+    print('📂 Loading menu data from: ${file.path}');
 
     if (await file.exists()) {
       final content = await file.readAsString();
@@ -51,6 +62,7 @@ class MenuDataService extends GetxService {
     final file = await _getLocalFile();
     if (await file.exists()) {
       await file.delete();
+      print('🗑 Menu data file deleted from: ${file.path}');
     }
   }
 }

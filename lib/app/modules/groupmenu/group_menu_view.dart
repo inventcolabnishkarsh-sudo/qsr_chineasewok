@@ -314,68 +314,76 @@ class GroupMenuView extends GetView<GroupMenuController> {
 
                             /// 📜 SCROLLABLE CONTENT
                             Expanded(
-                              child: SingleChildScrollView(
+                              child: Scrollbar(
                                 controller: controller.scrollController,
-                                padding: const EdgeInsets.fromLTRB(
-                                  24,
-                                  8,
-                                  24,
-                                  24,
-                                ),
-                                child: LayoutBuilder(
-                                  builder: (context, constraints) {
-                                    final maxWidth = constraints.maxWidth;
+                                thumbVisibility:
+                                    true, // 👈 always visible (kiosk friendly)
+                                thickness: 6,
+                                radius: const Radius.circular(8),
+                                child: SingleChildScrollView(
+                                  controller: controller.scrollController,
+                                  padding: const EdgeInsets.fromLTRB(
+                                    24,
+                                    8,
+                                    24,
+                                    24,
+                                  ),
+                                  child: LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      final maxWidth = constraints.maxWidth;
 
-                                    int columns = 1;
-                                    if (maxWidth >= 1200) {
-                                      columns = 3;
-                                    } else if (maxWidth >= 800) {
-                                      columns = 2;
-                                    }
+                                      int columns = 1;
+                                      if (maxWidth >= 1200) {
+                                        columns = 3;
+                                      } else if (maxWidth >= 800) {
+                                        columns = 2;
+                                      }
 
-                                    final itemWidth =
-                                        (maxWidth - ((columns - 1) * 16)) /
-                                        columns;
+                                      final itemWidth =
+                                          (maxWidth - ((columns - 1) * 16)) /
+                                          columns;
 
-                                    final grouped =
-                                        controller.menuItemsGroupedByServes;
+                                      final grouped =
+                                          controller.menuItemsGroupedByServes;
 
-                                    return Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: grouped.entries.map((entry) {
-                                        final serves = entry.key;
-                                        final items = entry.value;
-                                        final showServesHeader =
-                                            controller.shouldShowServesHeader &&
-                                            serves > 0;
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: grouped.entries.map((entry) {
+                                          final serves = entry.key;
+                                          final items = entry.value;
+                                          final showServesHeader =
+                                              controller
+                                                  .shouldShowServesHeader &&
+                                              serves > 0;
 
-                                        return Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.stretch,
-                                          children: [
-                                            if (showServesHeader)
-                                              ServesHeader(serves: serves),
+                                          return Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            children: [
+                                              if (showServesHeader)
+                                                ServesHeader(serves: serves),
 
-                                            Wrap(
-                                              spacing: 16,
-                                              runSpacing: 16,
-                                              children: items.map((item) {
-                                                return SizedBox(
-                                                  width: itemWidth,
-                                                  child: MenuItemCard(
-                                                    item: item,
-                                                  ),
-                                                );
-                                              }).toList(),
-                                            ),
+                                              Wrap(
+                                                spacing: 16,
+                                                runSpacing: 16,
+                                                children: items.map((item) {
+                                                  return SizedBox(
+                                                    width: itemWidth,
+                                                    child: MenuItemCard(
+                                                      item: item,
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                              ),
 
-                                            const SizedBox(height: 24),
-                                          ],
-                                        );
-                                      }).toList(),
-                                    );
-                                  },
+                                              const SizedBox(height: 24),
+                                            ],
+                                          );
+                                        }).toList(),
+                                      );
+                                    },
+                                  ),
                                 ),
                               ),
                             ),

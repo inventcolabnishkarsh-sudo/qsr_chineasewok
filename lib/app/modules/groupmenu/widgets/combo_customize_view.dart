@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../group_menu_controller.dart';
+import '../model/cart_item.dart';
 
 class ComboCustomizeView extends StatefulWidget {
   final Map<String, dynamic> comboItem;
   final List<Map<String, dynamic>> bases;
+  final CartItem? editingItem; // 👈 ADD THIS
 
   const ComboCustomizeView({
     super.key,
     required this.comboItem,
     required this.bases,
+    this.editingItem,
   });
 
   @override
@@ -137,65 +140,64 @@ class _ComboCustomizeViewState extends State<ComboCustomizeView> {
           ),
           const SizedBox(height: 14),
 
-          ...List.generate(widget.bases.length, (i) {
-            final base = widget.bases[i];
-            final isCompleted = selections.containsKey(base['BaseId']);
-            final isActive = selectedBaseIndex == i;
+          Expanded(
+            // 👈 KEY FIX
+            child: Scrollbar(
+              thumbVisibility: true,
+              child: ListView.builder(
+                itemCount: widget.bases.length,
+                itemBuilder: (context, i) {
+                  final base = widget.bases[i];
+                  final isCompleted = selections.containsKey(base['BaseId']);
+                  final isActive = selectedBaseIndex == i;
 
-            return GestureDetector(
-              onTap: () => setState(() => selectedBaseIndex = i),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                margin: const EdgeInsets.only(bottom: 14),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isActive ? Colors.orange.shade100 : Colors.white,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: isCompleted
-                        ? Colors.orange
-                        : isActive
-                        ? Colors.orange
-                        : Colors.grey.shade300,
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    if (isActive)
-                      BoxShadow(
-                        color: Colors.orange.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 14,
-                      backgroundColor: isCompleted
-                          ? Colors.green
-                          : Colors.grey.shade300,
-                      child: Icon(
-                        isCompleted ? Icons.check : Icons.circle_outlined,
-                        size: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Text(
-                        base['BaseName'],
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
+                  return GestureDetector(
+                    onTap: () => setState(() => selectedBaseIndex = i),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      margin: const EdgeInsets.only(bottom: 14),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: isActive ? Colors.orange.shade100 : Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: isCompleted || isActive
+                              ? Colors.orange
+                              : Colors.grey.shade300,
+                          width: 2,
                         ),
                       ),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 14,
+                            backgroundColor: isCompleted
+                                ? Colors.green
+                                : Colors.grey.shade300,
+                            child: Icon(
+                              isCompleted ? Icons.check : Icons.circle_outlined,
+                              size: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Text(
+                              base['BaseName'],
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
-            );
-          }),
+            ),
+          ),
         ],
       ),
     );
@@ -291,11 +293,7 @@ class _ComboCustomizeViewState extends State<ComboCustomizeView> {
           children: [
             Text(
               base['BaseName'],
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                color: Colors.black,
-              ),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -308,60 +306,65 @@ class _ComboCustomizeViewState extends State<ComboCustomizeView> {
             ),
             const SizedBox(height: 16),
 
-            ...menus.map((menu) {
-              final isSelected = selectedMenuId == menu['Id'];
+            Expanded(
+              // 👈 KEY FIX
+              child: Scrollbar(
+                thumbVisibility: true,
+                child: ListView.builder(
+                  itemCount: menus.length,
+                  itemBuilder: (context, index) {
+                    final menu = menus[index];
+                    final isSelected = selectedMenuId == menu['Id'];
 
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selections[baseId] = menu['Id'];
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.only(bottom: 14),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: isSelected ? Colors.orange.shade50 : Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: isSelected ? Colors.orange : Colors.grey.shade300,
-                      width: 2,
-                    ),
-                    boxShadow: [
-                      if (isSelected)
-                        BoxShadow(
-                          color: Colors.orange.withOpacity(0.25),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        isSelected
-                            ? Icons.radio_button_checked
-                            : Icons.radio_button_unchecked,
-                        color: isSelected ? Colors.orange : Colors.grey,
-                        size: 26,
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Text(
-                          menu['MenuItemName'],
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: isSelected ? Colors.black : Colors.black87,
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selections[baseId] = menu['Id'];
+                        });
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        margin: const EdgeInsets.only(bottom: 14),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? Colors.orange.shade50
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: isSelected
+                                ? Colors.orange
+                                : Colors.grey.shade300,
+                            width: 2,
                           ),
                         ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isSelected
+                                  ? Icons.radio_button_checked
+                                  : Icons.radio_button_unchecked,
+                              color: isSelected ? Colors.orange : Colors.grey,
+                              size: 26,
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Text(
+                                menu['MenuItemName'],
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
-              );
-            }).toList(),
+              ),
+            ),
           ],
         ),
       ),
@@ -371,6 +374,8 @@ class _ComboCustomizeViewState extends State<ComboCustomizeView> {
   Widget _Footer() {
     final controller = Get.find<GroupMenuController>();
 
+    final bool isEditMode = widget.editingItem != null;
+
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
       decoration: BoxDecoration(
@@ -379,57 +384,36 @@ class _ComboCustomizeViewState extends State<ComboCustomizeView> {
       ),
       child: Row(
         children: [
-          /// ❌ CANCEL (SECONDARY)
+          /// ❌ CANCEL
           Expanded(
             child: OutlinedButton(
               onPressed: Get.back,
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.black,
-                side: BorderSide(color: Colors.grey.shade400, width: 2),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-              ),
+              child: const Text('Cancel'),
             ),
           ),
 
           const SizedBox(width: 16),
 
-          /// ✅ APPLY (PRIMARY)
+          /// ✅ APPLY / UPDATE
           Expanded(
             child: ElevatedButton(
               onPressed: isValid
                   ? () {
-                      controller.addComboToCart(widget.comboItem, selections);
-                      Get.back();
+                      if (isEditMode) {
+                        // ✅ MODIFY EXISTING (NO REMOVE, NO ADD)
+                        controller.updateExistingCombo(
+                          widget.editingItem!,
+                          selections,
+                        );
+                      } else {
+                        // ➕ ADD NEW COMBO
+                        controller.addComboToCart(widget.comboItem, selections);
+                      }
+
+                      Get.back(); // smooth close
                     }
                   : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isValid
-                    ? const Color(0xFF1FA45B)
-                    : Colors.grey.shade400,
-                elevation: isValid ? 6 : 0,
-                shadowColor: isValid
-                    ? const Color(0xFF1FA45B).withOpacity(0.4)
-                    : Colors.transparent,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: const Text(
-                'Add to Cart',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
-              ),
+              child: Text(isEditMode ? 'Update Combo' : 'Add to Cart'),
             ),
           ),
         ],

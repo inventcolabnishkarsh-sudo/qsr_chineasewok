@@ -40,10 +40,8 @@ class OrderSummaryView extends GetView<OrderSummaryController> {
                 itemCount: controller.items.length,
 
                 itemBuilder: (context, index) {
-                  if (index < controller.items.length) {
-                    final item = controller.items[index];
-                    return CartItemCard(item);
-                  }
+                  final item = controller.items[index];
+                  return CartItemCard(item);
                 },
               );
             }),

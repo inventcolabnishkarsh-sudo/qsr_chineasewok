@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../core/globalwidgets/numerickeyboard.dart';
+import '../../../../core/globalwidgets/custom_keyboard.dart';
 import '../finalize_order_controller.dart';
 
 class CustomerCheckInCard extends GetView<FinalizeOrderController> {
@@ -8,11 +8,12 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+
     return Center(
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        constraints: const BoxConstraints(maxWidth: 520),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+        constraints: BoxConstraints(maxWidth: 520, maxHeight: height * 0.9),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -24,162 +25,164 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
             ),
           ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            /// 🧾 TITLE
-            const Text(
-              'Customer Check-In',
-              style: TextStyle(
-                fontSize: 34,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF1E2430),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const Text(
+                'Customer Check-In',
+                style: TextStyle(fontSize: 34, fontWeight: FontWeight.w900),
               ),
-            ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 30),
 
-            /// 🟧 UNDERLINE
-            Container(
-              width: 160,
-              height: 6,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE67E22),
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-
-            const SizedBox(height: 36),
-
-            /// 🏷️ TAG NUMBER
-            GestureDetector(
-              onTap: () => controller.activeTarget.value = InputTarget.tag,
-              child: Obx(
-                () => _inputBox(
-                  hint: 'Enter Tag Number',
-                  controller: controller.tagController,
-                  isActive: controller.activeTarget.value == InputTarget.tag,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            /// 📱 MOBILE NUMBER
-            GestureDetector(
-              onTap: () => controller.activeTarget.value = InputTarget.mobile,
-              child: Obx(
-                () => _inputBox(
-                  hint: 'Enter Mobile Number',
-                  controller: controller.mobileController,
-                  isActive: controller.activeTarget.value == InputTarget.mobile,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            /// 🔢 NUMERIC KEYPAD
-            Obx(
-              () => NumericKeypad(
-                controller: controller.activeController,
-                maxLength: controller.maxLength,
-              ),
-            ),
-
-            const SizedBox(height: 28),
-
-            Obx(
-              () => SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed: controller.canSubmit
-                      ? () {
-                          // controller.submitCheckIn();
-                        }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: controller.canSubmit
-                        ? const Color(0xFFE67E22)
-                        : Colors.grey.shade400,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text(
-                    'Submit',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                    ),
+              /// TAG
+              InkWell(
+                onTap: () => controller.setActive(InputTarget.tag),
+                child: Obx(
+                  () => _inputBox(
+                    hint: 'Enter Tag Number',
+                    controller: controller.tagController,
+                    isActive: controller.activeTarget.value == InputTarget.tag,
                   ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 18),
+              const SizedBox(height: 20),
 
-            /// ➕ ADD MORE / ❌ CANCEL
-            Row(
-              children: [
-                /// ➕ ADD MORE ITEMS
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Get.back(); // go back to menu
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(
-                        color: Color(0xFFE67E22),
-                        width: 2,
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+              /// MOBILE
+              InkWell(
+                onTap: () => controller.setActive(InputTarget.mobile),
+                child: Obx(
+                  () => _inputBox(
+                    hint: 'Enter Mobile Number',
+                    controller: controller.mobileController,
+                    isActive:
+                        controller.activeTarget.value == InputTarget.mobile,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              /// 🔴 ERROR MESSAGE
+              Obx(() {
+                if (controller.errorText.value.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+
+                return Text(
+                  controller.errorText.value,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                );
+              }),
+              const SizedBox(height: 30),
+
+              /// KEYPAD
+              SizedBox(
+                height: 280,
+                child: QwertyKeyboard(
+                  type: KeyboardType.numeric,
+                  onKeyTap: controller.onNumericKeyTap,
+                  onBackspace: controller.onBackspace,
+                  onShift: () {},
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              /// SUBMIT
+              Obx(
+                () => SizedBox(
+                  width: double.infinity,
+                  height: 54,
+                  child: ElevatedButton(
+                    onPressed: controller.canSubmit.value ? () {} : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: controller.canSubmit.value
+                          ? const Color(0xFFE67E22)
+                          : Colors.grey.shade400,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
                     child: const Text(
-                      'Add More Items',
+                      'Submit',
                       style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFFE67E22),
+                        fontSize: 18,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
                 ),
+              ),
 
-                const SizedBox(width: 14),
+              const SizedBox(height: 20),
 
-                /// ❌ CANCEL
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      // Optional: confirmation dialog
-                      Get.back();
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.grey.shade400, width: 2),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+              /// ➕ ADD MORE / ❌ CANCEL
+              Row(
+                children: [
+                  /// ADD MORE ITEMS
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Get.back(); // go back to menu
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(
+                          color: Color(0xFFE67E22),
+                          width: 2,
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
-                    ),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87,
+                      child: const Text(
+                        'Add More Items',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFFE67E22),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+
+                  const SizedBox(width: 14),
+
+                  /// CANCEL ORDER
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Get.back(); // later you can show confirmation dialog
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.grey.shade400, width: 2),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: const Text(
+                        'Cancel Order',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -188,41 +191,26 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
   static Widget _inputBox({
     required String hint,
     required TextEditingController controller,
-    bool isActive = false,
+    required bool isActive,
   }) {
     return Container(
       height: 72,
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isActive ? const Color(0xFFE67E22) : const Color(0xFFE0E5EE),
+          color: isActive ? const Color(0xFFE67E22) : Colors.grey.shade300,
           width: 2.5,
         ),
-        boxShadow: isActive
-            ? [
-                BoxShadow(
-                  color: const Color(0xFFE67E22).withOpacity(0.2),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : [],
       ),
-      alignment: Alignment.center,
-      child: TextField(
-        controller: controller,
-        readOnly: true,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey.shade500,
-          ),
-          border: InputBorder.none,
+      child: IgnorePointer(
+        // 👈 KEY FIX
+        child: TextField(
+          controller: controller,
+          readOnly: true,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+          decoration: InputDecoration(hintText: hint, border: InputBorder.none),
         ),
       ),
     );

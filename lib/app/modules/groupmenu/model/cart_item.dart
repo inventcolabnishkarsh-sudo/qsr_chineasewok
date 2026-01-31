@@ -8,12 +8,11 @@ class CartItem {
   int quantity;
 
   final Uint8List? imageBytes;
-
   final int? serves;
   final bool? isVeg;
 
-  /// ✅ NEW: combo breakdown
-  final List<String>? comboItems;
+  /// ✅ combo breakdown (MUTABLE & NON-NULL)
+  List<String> comboItems;
 
   CartItem({
     required this.menuId,
@@ -24,8 +23,8 @@ class CartItem {
     this.imageBytes,
     this.serves,
     this.isVeg,
-    this.comboItems,
-  });
+    List<String>? comboItems,
+  }) : comboItems = comboItems ?? [];
 
   int get total => price * quantity;
 }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import '../../../../core/globalwidgets/numerickeyboard.dart';
 import '../order_summary_controller.dart';
 import 'package:confetti/confetti.dart';
+
+import 'coupendialog.dart';
 
 class BillSummary extends StatelessWidget {
   const BillSummary({super.key});
@@ -96,10 +99,13 @@ class BillSummary extends StatelessWidget {
                 /// 🎟️ COUPON INPUT / STATUS
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-
-                  child: controller.isCouponApplied.value
-                      ? _AppliedCoupon(controller)
-                      : _CouponInput(controller),
+                  child: Column(
+                    children: [
+                      controller.isCouponApplied.value
+                          ? _AppliedCoupon(controller)
+                          : _CouponInput(controller),
+                    ],
+                  ),
                 ),
 
                 if (controller.isCouponApplied.value)
@@ -297,24 +303,29 @@ class _CouponInput extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: TextField(
-            controller: controller.couponController,
-            onChanged: controller.onCouponChanged,
-            decoration: InputDecoration(
-              hintText: 'Enter coupon',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 12,
+          child: GestureDetector(
+            onTap: () => _openCouponDialog(),
+            child: AbsorbPointer(
+              child: TextField(
+                controller: controller.couponController,
+                readOnly: true,
+                showCursor: true,
+                decoration: InputDecoration(
+                  hintText: 'Enter coupon',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                ),
               ),
             ),
           ),
         ),
         const SizedBox(width: 12),
 
-        /// ✅ THIS IS THE KEY FIX
         Obx(() {
           return ElevatedButton(
             onPressed: controller.isApplyEnabled.value
@@ -340,6 +351,11 @@ class _CouponInput extends StatelessWidget {
         }),
       ],
     );
+  }
+
+  /// 🔔 OPEN DIALOG
+  void _openCouponDialog() {
+    Get.dialog(CouponDialog(controller), barrierDismissible: true);
   }
 }
 

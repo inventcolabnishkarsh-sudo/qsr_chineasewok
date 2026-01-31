@@ -154,28 +154,19 @@ class GroupMenuController extends GetxController {
     return validServes.isNotEmpty;
   }
 
-  void openComboCustomizer(Map<String, dynamic> item) {
-    // ✅ FIX: Bases are inside Menu
+  void openComboCustomizer(Map<String, dynamic> item, {CartItem? editingItem}) {
     final basesNode = item['Menu']?['Bases'];
 
-    if (basesNode == null ||
-        basesNode['\$values'] == null ||
-        (basesNode['\$values'] as List).isEmpty) {
-      Get.snackbar(
-        'Combo Error',
-        'No base options available',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return;
-    }
+    if (basesNode == null || basesNode['\$values'] == null) return;
 
-    final List<Map<String, dynamic>> bases = List<Map<String, dynamic>>.from(
-      basesNode['\$values'],
-    );
+    final bases = List<Map<String, dynamic>>.from(basesNode['\$values']);
 
     Get.dialog(
-      ComboCustomizeView(comboItem: item, bases: bases),
+      ComboCustomizeView(
+        comboItem: item,
+        bases: bases,
+        editingItem: editingItem, // ✅ pass it
+      ),
       barrierDismissible: false,
     );
   }
@@ -233,6 +224,36 @@ class GroupMenuController extends GetxController {
     }
 
     /// 🔥 FORCE UI UPDATE
+    cart.refresh();
+  }
+
+  /// ✏️ UPDATE EXISTING COMBO (MODIFY FLOW)
+  void updateExistingCombo(CartItem editingItem, Map<int, int> selections) {
+    final comboItem = allMenuItems.firstWhere(
+      (e) => e['Menu'] != null && e['Menu']['Id'] == editingItem.menuId,
+    );
+
+    final menu = comboItem['Menu'];
+    final bases = List<Map<String, dynamic>>.from(menu['Bases']['\$values']);
+
+    final updatedNames = <String>[];
+
+    for (final base in bases) {
+      final int baseId = base['BaseId'];
+      final int selectedMenuId = selections[baseId]!;
+
+      final menus = List<Map<String, dynamic>>.from(
+        base['BaseMenus']['\$values'],
+      );
+
+      final selectedMenu = menus.firstWhere((m) => m['Id'] == selectedMenuId);
+
+      updatedNames.add(selectedMenu['MenuItemName']);
+    }
+
+    /// ✅ SAFE UPDATE
+    editingItem.comboItems = List<String>.from(updatedNames);
+
     cart.refresh();
   }
 
