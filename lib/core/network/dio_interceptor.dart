@@ -32,31 +32,54 @@ class DioInterceptor extends Interceptor {
   }
 
   @override
+  @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     AppLogger.error('Dio error: ${err.type}');
+    AppLogger.error('URL: ${err.requestOptions.uri}');
+    AppLogger.error('Status: ${err.response?.statusCode}');
+    AppLogger.json(err.response?.data);
 
-    // ✅ Normalize ALL errors into ApiException
+    // If already ApiException, just forward
     if (err.error is ApiException) {
-      handler.reject(err); // already normalized
+      handler.next(err);
       return;
     }
 
     String message = 'Something went wrong';
 
-    if (err.type == DioExceptionType.connectionError) {
-      message = 'No internet connection';
-    } else if (err.type == DioExceptionType.connectionTimeout ||
-        err.type == DioExceptionType.receiveTimeout) {
-      message = 'Connection timeout';
-    } else if (err.response != null) {
-      message = 'Server error (${err.response?.statusCode})';
+    switch (err.type) {
+      case DioExceptionType.connectionError:
+        message = 'No internet connection';
+        break;
+
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.receiveTimeout:
+        message = 'Connection timeout';
+        break;
+
+      case DioExceptionType.badResponse:
+        message =
+            err.response?.data?['message'] ??
+            'Server error (${err.response?.statusCode})';
+        break;
+
+      default:
+        message = 'Unexpected error';
     }
 
-    handler.reject(
-      DioException(
-        requestOptions: err.requestOptions,
-        error: ApiException(message, statusCode: err.response?.statusCode),
-      ),
+    final apiException = ApiException(
+      message,
+      statusCode: err.response?.statusCode,
     );
+
+    // ✅ Re-create DioException (Dio 5 way)
+    final newError = DioException(
+      requestOptions: err.requestOptions,
+      response: err.response,
+      type: err.type,
+      error: apiException,
+    );
+
+    handler.next(newError); // ✅ forward safely
   }
 }

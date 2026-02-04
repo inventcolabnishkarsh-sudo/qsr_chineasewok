@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:dio/dio.dart';
 import '../../../core/constants/api_constants.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/network/dio_client.dart';
@@ -14,6 +15,8 @@ class SplashController extends GetxController
 
   final DioClient _dioClient = DioClient();
   final RxBool isLoading = true.obs;
+
+  bool _navigated = false; // ✅ guard
 
   @override
   void onInit() {
@@ -48,54 +51,57 @@ class SplashController extends GetxController
     // ✅ CACHE CHECK
     if (menuService.hasData) {
       AppLogger.log('Menu data already available → skipping API');
-
       isLoading.value = false;
-
-      // 🔐 SAFE NAVIGATION
       _goHome();
       return;
     }
 
     try {
-      final url = '${ApiConstants.manageOutlet}=1';
-
       AppLogger.divider('API REQUEST');
-      AppLogger.log('GET ${ApiConstants.baseUrl}$url');
 
-      final response = await _dioClient.dio.get(url);
+      final response = await _dioClient.dio.get(
+        ApiConstants.manageOutlet,
+        queryParameters: {'OutletId': 1},
+      );
 
+      AppLogger.log('GET ${response.requestOptions.uri}');
       AppLogger.divider('API RESPONSE');
       AppLogger.log('Status Code: ${response.statusCode}');
       AppLogger.json(response.data);
 
-      if (response.statusCode == 200) {
-        await menuService.setData(response.data);
-        AppLogger.log('Menu data saved in cache');
+      await menuService.setData(response.data);
+      AppLogger.log('Menu data saved in cache');
 
-        isLoading.value = false;
-        _goHome();
-      } else {
-        throw ApiException(
-          'Failed to load outlet data',
-          statusCode: response.statusCode,
-        );
-      }
+      isLoading.value = false;
+      _goHome();
+    } on DioException catch (e, stack) {
+      AppLogger.divider('DIO ERROR');
+      AppLogger.error('URL: ${e.requestOptions.uri}');
+      AppLogger.error('Status: ${e.response?.statusCode}');
+      AppLogger.json(e.response?.data);
+      AppLogger.error(stack);
+
+      _handleError(e.error);
     } catch (e, stack) {
-      AppLogger.divider('API ERROR');
+      AppLogger.divider('UNEXPECTED ERROR');
       AppLogger.error(e);
       AppLogger.error(stack);
-      _handleError(e);
+
+      _handleError(ApiException('Unexpected error occurred'));
     }
   }
 
-  /// 🧭 NAVIGATION (POST FRAME)
+  /// 🧭 SAFE NAVIGATION
   void _goHome() {
+    if (_navigated) return;
+    _navigated = true;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Get.offAllNamed('/home');
     });
   }
 
-  void _handleError(Object error) {
+  void _handleError(Object? error) {
     isLoading.value = false;
 
     final message = error is ApiException

@@ -131,7 +131,7 @@ class OrderSummaryController extends GetxController {
   @override
   void onClose() {
     couponController.dispose();
-    confettiController.dispose(); // 👈 add this
+    confettiController.dispose();
     super.onClose();
   }
 }
