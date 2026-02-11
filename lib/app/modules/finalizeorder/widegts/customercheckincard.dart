@@ -58,6 +58,7 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
                     controller: controller.mobileController,
                     isActive:
                         controller.activeTarget.value == InputTarget.mobile,
+                    isMobile: true,
                   ),
                 ),
               ),
@@ -192,9 +193,13 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
     required String hint,
     required TextEditingController controller,
     required bool isActive,
+    bool isMobile = false,
   }) {
+    final finalizeController = Get.find<FinalizeOrderController>();
+
     return Container(
       height: 72,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -203,15 +208,64 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
           width: 2.5,
         ),
       ),
-      child: IgnorePointer(
-        // 👈 KEY FIX
-        child: TextField(
-          controller: controller,
-          readOnly: true,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-          decoration: InputDecoration(hintText: hint, border: InputBorder.none),
-        ),
+      child: Row(
+        children: [
+          /// TEXT DISPLAY
+          Expanded(
+            child: isMobile
+                ? Obx(() {
+                    final originalText = finalizeController.mobileText.value;
+                    String displayText = originalText;
+
+                    if (!finalizeController.isMobileVisible.value &&
+                        originalText.length >= 4) {
+                      final first = originalText.substring(0, 2);
+                      final last = originalText.substring(
+                        originalText.length - 2,
+                      );
+                      final masked = '*' * (originalText.length - 4);
+                      displayText = '$first$masked$last';
+                    }
+
+                    return Text(
+                      displayText.isEmpty ? hint : displayText,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                        color: displayText.isEmpty ? Colors.grey : Colors.black,
+                      ),
+                    );
+                  })
+                : Text(
+                    controller.text.isEmpty ? hint : controller.text,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: controller.text.isEmpty
+                          ? Colors.grey
+                          : Colors.black,
+                    ),
+                  ),
+          ),
+
+          /// 👁 EYE BUTTON
+          if (isMobile)
+            Obx(
+              () => IconButton(
+                icon: Icon(
+                  finalizeController.isMobileVisible.value
+                      ? Icons.visibility
+                      : Icons.visibility_off,
+                  color: Colors.grey.shade600,
+                ),
+                onPressed: () {
+                  finalizeController.isMobileVisible.toggle();
+                },
+              ),
+            ),
+        ],
       ),
     );
   }

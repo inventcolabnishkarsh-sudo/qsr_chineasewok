@@ -9,6 +9,8 @@ class FinalizeOrderController extends GetxController {
 
   final Rx<InputTarget> activeTarget = InputTarget.tag.obs;
   final RxBool canSubmit = false.obs;
+  final RxBool isMobileVisible = false.obs;
+  final RxString mobileText = ''.obs;
 
   /// 🔴 ERROR MESSAGE
   final RxString errorText = ''.obs;
@@ -34,13 +36,18 @@ class FinalizeOrderController extends GetxController {
     if (activeTarget.value == InputTarget.mobile &&
         ctrl.text.isEmpty &&
         !RegExp(r'[6-9]').hasMatch(value)) {
-      errorText.value = 'Enter your correct mobile number to receive your bill on the same number.';
+      errorText.value =
+          'Enter your correct mobile number to receive your bill on the same number.';
       return; // ❌ block input
     }
 
     if (ctrl.text.length >= maxLength) return;
-
     ctrl.text += value;
+
+    if (activeTarget.value == InputTarget.mobile) {
+      mobileText.value = ctrl.text;
+    }
+
     errorText.value = ''; // ✅ clear error on valid input
 
     /// 🔄 Auto-switch TAG → MOBILE (only once)
@@ -60,6 +67,9 @@ class FinalizeOrderController extends GetxController {
 
     ctrl.text = ctrl.text.substring(0, ctrl.text.length - 1);
     errorText.value = '';
+    if (activeTarget.value == InputTarget.mobile) {
+      mobileText.value = ctrl.text;
+    }
 
     if (activeTarget.value == InputTarget.tag) {
       _autoSwitchedFromTag = false;

@@ -5,6 +5,7 @@ import '../modules/groupmenu/group_menu_binding.dart';
 import '../modules/groupmenu/group_menu_view.dart';
 import '../modules/home/home_binding.dart';
 import '../modules/home/home_view.dart';
+import '../modules/idelscreen/idle_screen.dart';
 import '../modules/order_summary/order_summary_binding.dart';
 import '../modules/order_summary/order_summary_view.dart';
 import '../modules/splash/splash_binding.dart';
@@ -38,5 +39,6 @@ class AppPages {
       page: () => const FinalizeOrderView(),
       binding: FinalizeOrderBinding(),
     ),
+    GetPage(name: AppRoutes.idleScreen, page: () => const IdleScreen()),
   ];
 }

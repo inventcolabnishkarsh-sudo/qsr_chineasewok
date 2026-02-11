@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qsr_chineasewok_kiosk/app/modules/groupmenu/widgets/menu_item_cards.dart';
+import '../home/home_controller.dart';
+import '../order_summary/widgets/header.dart';
 import 'group_menu_controller.dart';
 import 'widgets/group_cards.dart';
 import 'widgets/serversheader.dart';
@@ -14,6 +16,8 @@ class GroupMenuView extends GetView<GroupMenuController> {
   Widget build(BuildContext context) {
     const Color kPrimaryOrange = Color(0xFFE67E30);
     const Color kBorderLight = Color(0xFFE0E0E0);
+
+    final OrderType orderType = controller.orderType;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -123,25 +127,26 @@ class GroupMenuView extends GetView<GroupMenuController> {
       body: Column(
         children: [
           /// 🖤 HEADER
-          SizedBox(
-            height: 120,
-            child: Column(
-              children: [
-                Container(
-                  height: 117,
-                  width: double.infinity,
-                  color: Colors.black,
-                  child: Center(
-                    child: Image.asset(
-                      'assets/images/logo/homelogo.png',
-                      height: 60,
-                    ),
-                  ),
-                ),
-                Container(height: 3, color: Colors.red),
-              ],
-            ),
-          ),
+          // SizedBox(
+          //   height: 120,
+          //   child: Column(
+          //     children: [
+          //       Container(
+          //         height: 117,
+          //         width: double.infinity,
+          //         color: Colors.black,
+          //         child: Center(
+          //           child: Image.asset(
+          //             'assets/images/logo/homelogo.png',
+          //             height: 60,
+          //           ),
+          //         ),
+          //       ),
+          //       Container(height: 3, color: Colors.red),
+          //     ],
+          //   ),
+          // ),
+          Header(orderType),
 
           /// 🧩 BODY
           Expanded(
@@ -334,14 +339,15 @@ class GroupMenuView extends GetView<GroupMenuController> {
 
                                       int columns = 1;
                                       if (maxWidth >= 1200) {
-                                        columns = 3;
+                                        columns = 4;
                                       } else if (maxWidth >= 800) {
-                                        columns = 2;
+                                        columns = 3;
                                       }
 
                                       final itemWidth =
-                                          (maxWidth - ((columns - 1) * 16)) /
-                                          columns;
+                                          ((maxWidth - ((columns - 1) * 16)) /
+                                              columns) -
+                                          80;
 
                                       final grouped =
                                           controller.menuItemsGroupedByServes;

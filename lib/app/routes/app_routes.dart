@@ -4,4 +4,5 @@ abstract class AppRoutes {
   static const groupMenu = '/group-menu';
   static const orderSummary = '/order-summary';
   static const finalizeOrder = '/finalize-order';
+  static const idleScreen = '/idle-screen';
 }

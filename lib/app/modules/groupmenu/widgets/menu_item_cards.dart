@@ -18,7 +18,17 @@ class MenuItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final menu = item['Menu']; // item = OutletMenu
 
-    final bool isVeg = menu['VegNonVeg'] == 1;
+    // final bool isVeg = menu['VegNonVeg'] == 1;
+    final value = menu['VegNonVeg'];
+
+    bool? isVeg;
+    if (value == 1) {
+      isVeg = true;
+    } else if (value == 2) {
+      isVeg = false;
+    } else {
+      isVeg = null; // drinks / not applicable
+    }
 
     // 🔥 CORRECT KEYS
     final bool isHalfAvailable = item['IsHalfAvailable'] == true;
@@ -77,7 +87,7 @@ class MenuItemCard extends StatelessWidget {
 
           /// 🖼️ IMAGE
           SizedBox(
-            height: 140, // 👈 controls card height safely
+            height: 140, //  controls card height safely
             child: Center(
               child: imageBytes != null
                   ? Image.memory(imageBytes!, fit: BoxFit.contain)
@@ -108,10 +118,10 @@ class MenuItemCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 10),
+          // const SizedBox(height: 10),
 
           /// 💰 PRICE
-          const SizedBox(height: 12),
+          // const SizedBox(height: 20),
 
           if (isHalfAvailable && !isCombo)
             Row(

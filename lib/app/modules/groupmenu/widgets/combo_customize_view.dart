@@ -25,6 +25,33 @@ class _ComboCustomizeViewState extends State<ComboCustomizeView> {
 
   /// baseId -> selectedMenu
   bool get isValid => selections.length == widget.bases.length;
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.editingItem != null) {
+      _prefillSelections();
+    }
+  }
+
+  void _prefillSelections() {
+    final selectedNames = widget.editingItem!.comboItems;
+
+    for (final base in widget.bases) {
+      final int baseId = base['BaseId'];
+
+      final menus = List<Map<String, dynamic>>.from(
+        base['BaseMenus']['\$values'],
+      );
+
+      for (final menu in menus) {
+        if (selectedNames.contains(menu['MenuItemName'])) {
+          selections[baseId] = menu['Id'];
+          break;
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

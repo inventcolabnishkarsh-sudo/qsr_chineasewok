@@ -181,6 +181,16 @@ class GroupMenuController extends GetxController {
     final int price = comboItem['Price'];
 
     final bases = List<Map<String, dynamic>>.from(menu['Bases']['\$values']);
+    final value = menu['VegNonVeg'];
+
+    bool? vegFlag;
+    if (value == 1) {
+      vegFlag = true;
+    } else if (value == 2) {
+      vegFlag = false;
+    } else {
+      vegFlag = null;
+    }
 
     /// Resolve selected menu names
     final selectedNames = <String>[];
@@ -218,7 +228,8 @@ class GroupMenuController extends GetxController {
         portion: 'combo',
         imageBytes: imageBytes,
         serves: menu['Serves'],
-        isVeg: menu['VegNonVeg'] == 1,
+       // isVeg: menu['VegNonVeg'] == 1,
+        isVeg: vegFlag,
         comboItems: selectedNames,
       );
     }
@@ -269,6 +280,16 @@ class GroupMenuController extends GetxController {
     final int price = portion == 'half' ? item['HalfPrice'] : item['Price'];
 
     final key = _cartKey(menuId, portion);
+    final value = menu['VegNonVeg'];
+
+    bool? vegFlag;
+    if (value == 1) {
+      vegFlag = true;
+    } else if (value == 2) {
+      vegFlag = false;
+    } else {
+      vegFlag = null; // drinks / not applicable
+    }
 
     if (cart.containsKey(key)) {
       cart[key]!.quantity++;
@@ -289,7 +310,8 @@ class GroupMenuController extends GetxController {
         portion: portion,
         imageBytes: imageBytes,
         serves: null,
-        isVeg: menu['VegNonVeg'] == 1,
+        // isVeg: menu['VegNonVeg'] == 1,
+        isVeg: vegFlag,
       );
     }
   }
