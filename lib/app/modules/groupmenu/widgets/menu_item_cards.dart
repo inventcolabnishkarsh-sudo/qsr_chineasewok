@@ -118,11 +118,10 @@ class MenuItemCard extends StatelessWidget {
             ),
           ),
 
-          // const SizedBox(height: 10),
+          const SizedBox(height: 10),
 
           /// 💰 PRICE
           // const SizedBox(height: 20),
-
           if (isHalfAvailable && !isCombo)
             Row(
               children: [
