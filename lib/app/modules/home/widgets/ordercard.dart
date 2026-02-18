@@ -21,7 +21,7 @@ class OrderCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(26),
       onTap: onTap,
       child: Card(
-        clipBehavior: Clip.antiAlias, // ✅ IMPORTANT
+        clipBehavior: Clip.antiAlias,
         color: Colors.white,
         elevation: 12,
         shadowColor: Colors.black38,
@@ -34,8 +34,12 @@ class OrderCard extends StatelessWidget {
           height: 450,
           child: Column(
             children: [
-              // 🔴 Top Red Brand Line
-              Container(width: double.infinity, height: 12, color: Colors.red),
+              // Top Red Brand Line
+              Container(
+                width: double.infinity,
+                height: 12,
+                color: const Color(0xffc7834e),
+              ),
 
               // 🖼 Image perfectly centered in remaining space
               Expanded(

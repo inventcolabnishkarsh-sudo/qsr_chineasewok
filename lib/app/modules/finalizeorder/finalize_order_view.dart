@@ -22,7 +22,7 @@ class FinalizeOrderView extends StatelessWidget {
           Header(orderType),
 
           /// 🔴 DIVIDER
-          const Divider(height: 1, thickness: 1.5, color: Colors.red),
+          const Divider(height: 1, thickness: 1.5, color: Color(0xffc7834e)),
 
           /// 📦 CONTENT
           Expanded(child: CustomerCheckInCard()),

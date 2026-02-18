@@ -21,19 +21,15 @@ class HomeView extends GetView<HomeController> {
                 Container(
                   width: double.infinity,
                   height: 140,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
 
-                Positioned(
-                  top: -60,
-                  right: -60,
-                  child: RotationTransition(
-                    turns: controller.rotationAnimation,
-                    child: Image.asset(
-                      'assets/images/homeimg.png',
-                      width: 220,
-                      height: 220,
-                    ),
+                Align(
+                  alignment: AlignmentGeometry.centerRight,
+                  child: Image.asset(
+                    'assets/images/ads/ban1.png',
+                    width: 220,
+                    height: 220,
                   ),
                 ),
 
@@ -42,7 +38,7 @@ class HomeView extends GetView<HomeController> {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Image.asset(
-                      'assets/images/logo/homelogo.png',
+                      'assets/images/logo/logohome.png',
                       height: 70,
                     ),
                   ),
@@ -51,11 +47,11 @@ class HomeView extends GetView<HomeController> {
             ),
           ),
 
-          // 🔴 RED DIVIDER (brand accent)
+          //  DIVIDER (brand accent)
           Container(
             width: double.infinity,
-            height: 3, // 👈 thin & clean
-            color: Colors.red,
+            height: 3,
+            color: const Color(0xffc7834e),
           ),
           SizedBox(height: 50),
 
@@ -81,7 +77,7 @@ class HomeView extends GetView<HomeController> {
                           style: GoogleFonts.pacifico(
                             fontSize: 48,
                             letterSpacing: 3,
-                            color: Colors.red,
+                            color: const Color(0xffc7834e),
                           ),
                         ),
                         TextSpan(
@@ -99,7 +95,7 @@ class HomeView extends GetView<HomeController> {
                   const SizedBox(height: 30),
 
                   Text(
-                    'Where would you like to eat?',
+                    'What would you like to buy?',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.montserrat(
                       fontSize: 28,
@@ -116,22 +112,22 @@ class HomeView extends GetView<HomeController> {
                     children: [
                       OrderCard(
                         title: 'Take Away',
-                        subtitle: 'Take your favourite meals to go',
+                        subtitle: 'Take your favourite product to go',
                         imagePath: 'assets/images/takeaway.jpg',
                         onTap: () {
                           controller.onOrderSelected(OrderType.takeaway);
                         },
                       ),
 
-                      const SizedBox(width: 20),
-                      OrderCard(
-                        title: 'Dine In',
-                        subtitle: 'Enjoy fresh food in our outlet',
-                        imagePath: 'assets/images/dinein.jpg',
-                        onTap: () {
-                          controller.onOrderSelected(OrderType.dineIn);
-                        },
-                      ),
+                      // const SizedBox(width: 20),
+                      // OrderCard(
+                      //   title: 'Dine In',
+                      //   subtitle: 'Enjoy fresh food in our outlet',
+                      //   imagePath: 'assets/images/dinein.jpg',
+                      //   onTap: () {
+                      //     controller.onOrderSelected(OrderType.dineIn);
+                      //   },
+                      // ),
                     ],
                   ),
                 ],
@@ -157,7 +153,7 @@ class HomeView extends GetView<HomeController> {
           children: [
             const Spacer(),
             const Text(
-              'Follow us for a\nFoodgasmic Experience',
+              'Follow us for a\nProductgamisc Experience',
               textAlign: TextAlign.right,
               style: TextStyle(
                 color: Colors.white,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 enum InputTarget { tag, mobile }
 
@@ -11,6 +12,8 @@ class FinalizeOrderController extends GetxController {
   final RxBool canSubmit = false.obs;
   final RxBool isMobileVisible = false.obs;
   final RxString mobileText = ''.obs;
+
+  late Razorpay _razorpay;
 
   /// 🔴 ERROR MESSAGE
   final RxString errorText = ''.obs;
@@ -26,6 +29,46 @@ class FinalizeOrderController extends GetxController {
     activeTarget.value = target;
     errorText.value = ''; // 👈 clear error when switching field
   }
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    _razorpay = Razorpay();
+
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
+
+  void openCheckout(double payableAmount) {
+    int amountInPaise = (payableAmount * 100).round();
+
+    var options = {
+      'key': 'rzp_test_LTysJoN6nEVmkt',
+      'amount': amountInPaise,
+      'name': 'HOME ESSENTIALS PVT LTD',
+      'description': 'Order Payment',
+      'prefill': {
+        'contact': mobileController.text,
+        'email': 'test@razorpay.com',
+      },
+      'theme': {'color': '#c7834e'},
+      'modal': {'escape': false, 'confirm_close': true},
+    };
+
+    _razorpay.open(options);
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    Get.snackbar("Success", "Payment Successful");
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    Get.snackbar("Error", "Payment Failed");
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {}
 
   void onNumericKeyTap(String value) {
     if (!RegExp(r'[0-9]').hasMatch(value)) return;
@@ -90,6 +133,7 @@ class FinalizeOrderController extends GetxController {
 
   @override
   void onClose() {
+    _razorpay.clear();
     tagController.dispose();
     mobileController.dispose();
     super.onClose();

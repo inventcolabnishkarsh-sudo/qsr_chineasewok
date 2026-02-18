@@ -189,7 +189,7 @@ class _ComboCustomizeViewState extends State<ComboCustomizeView> {
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
                           color: isCompleted || isActive
-                              ? Colors.orange
+                              ? const Color(0xffc7834e)
                               : Colors.grey.shade300,
                           width: 2,
                         ),
@@ -360,7 +360,7 @@ class _ComboCustomizeViewState extends State<ComboCustomizeView> {
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
                             color: isSelected
-                                ? Colors.orange
+                                ? const Color(0xffc7834e)
                                 : Colors.grey.shade300,
                             width: 2,
                           ),
@@ -371,7 +371,9 @@ class _ComboCustomizeViewState extends State<ComboCustomizeView> {
                               isSelected
                                   ? Icons.radio_button_checked
                                   : Icons.radio_button_unchecked,
-                              color: isSelected ? Colors.orange : Colors.grey,
+                              color: isSelected
+                                  ? const Color(0xffc7834e)
+                                  : Colors.grey,
                               size: 26,
                             ),
                             const SizedBox(width: 14),

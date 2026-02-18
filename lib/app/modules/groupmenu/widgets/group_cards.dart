@@ -17,7 +17,7 @@ class GroupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color kOrange = Color(0xFFE67E30);
+    const Color kOrange = Color(0xffc7834e);
 
     return InkWell(
       onTap: onTap,
@@ -40,16 +40,16 @@ class GroupCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               child: imageBytes != null
                   ? Image.memory(
-                imageBytes!,
-                width: 56,
-                height: 56,
-                fit: BoxFit.cover,
-              )
+                      imageBytes!,
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                    )
                   : Image.asset(
-                'assets/images/menu_placeholder.png',
-                width: 56,
-                height: 56,
-              ),
+                      'assets/images/menu_placeholder.png',
+                      width: 56,
+                      height: 56,
+                    ),
             ),
 
             const SizedBox(height: 10),

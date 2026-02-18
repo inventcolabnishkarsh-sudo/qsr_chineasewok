@@ -19,18 +19,23 @@ class OrderSummaryView extends GetView<OrderSummaryController> {
         children: [
           /// 🔝 HEADER
           Header(orderType),
-          Divider(height: 1, thickness: 1.5, color: Colors.red),
+          Divider(height: 1, thickness: 1.5, color: Color(0xffc7834e)),
 
-          /// 🎥 VIDEO BOX (ONLY IF ITEMS < 3)
+          /// 🎥 Image BOX (ONLY IF ITEMS < 3)
           Obx(() {
             return Visibility(
               visible: controller.items.length < 3,
               maintainState: true,
               maintainAnimation: true,
               maintainSize: false,
-              child: const PromoVideoBox(),
+              child: Image.asset(
+                'assets/images/ban2.png',
+                fit: BoxFit.cover,
+                width: double.infinity,
+              ),
             );
           }),
+
 
           /// 🧾 ITEMS
           Expanded(

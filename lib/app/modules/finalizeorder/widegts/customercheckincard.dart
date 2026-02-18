@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/globalwidgets/custom_keyboard.dart';
+import '../../../../core/utils/razorpay_web_screen.dart';
+import '../../order_summary/order_summary_controller.dart';
 import '../finalize_order_controller.dart';
 
 class CustomerCheckInCard extends GetView<FinalizeOrderController> {
@@ -35,19 +37,19 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
 
               const SizedBox(height: 30),
 
-              /// TAG
-              InkWell(
-                onTap: () => controller.setActive(InputTarget.tag),
-                child: Obx(
-                  () => _inputBox(
-                    hint: 'Enter Tag Number',
-                    controller: controller.tagController,
-                    isActive: controller.activeTarget.value == InputTarget.tag,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
+              // /// TAG
+              // InkWell(
+              //   onTap: () => controller.setActive(InputTarget.tag),
+              //   child: Obx(
+              //     () => _inputBox(
+              //       hint: 'Enter Tag Number',
+              //       controller: controller.tagController,
+              //       isActive: controller.activeTarget.value == InputTarget.tag,
+              //     ),
+              //   ),
+              // ),
+              //
+              // const SizedBox(height: 20),
 
               /// MOBILE
               InkWell(
@@ -102,10 +104,27 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
                   width: double.infinity,
                   height: 54,
                   child: ElevatedButton(
-                    onPressed: controller.canSubmit.value ? () {} : null,
+                    onPressed: controller.canSubmit.value
+                        ? () {
+                            final orderController =
+                                Get.find<OrderSummaryController>();
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => RazorpayWebScreen(
+                                  amount: (orderController.payableAmount * 100)
+                                      .round(),
+                                  mobile: controller.mobileController.text,
+                                ),
+                              ),
+                            );
+                          }
+                        : null,
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor: controller.canSubmit.value
-                          ? const Color(0xFFE67E22)
+                          ? const Color(0xffc7834e)
                           : Colors.grey.shade400,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -136,7 +155,7 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
                       },
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(
-                          color: Color(0xFFE67E22),
+                          color: const Color(0xffc7834e),
                           width: 2,
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -149,7 +168,7 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFFE67E22),
+                          color: Color(0xffc7834e),
                         ),
                       ),
                     ),
@@ -204,7 +223,7 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isActive ? const Color(0xFFE67E22) : Colors.grey.shade300,
+          color: isActive ? const Color(0xffc7834e) : Colors.grey.shade300,
           width: 2.5,
         ),
       ),

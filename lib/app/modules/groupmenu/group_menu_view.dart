@@ -7,14 +7,13 @@ import '../order_summary/widgets/header.dart';
 import 'group_menu_controller.dart';
 import 'widgets/group_cards.dart';
 import 'widgets/serversheader.dart';
-import 'package:collection/collection.dart';
 
 class GroupMenuView extends GetView<GroupMenuController> {
   const GroupMenuView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const Color kPrimaryOrange = Color(0xFFE67E30);
+    const Color kPrimaryOrange = Color(0xffc7834e);
     const Color kBorderLight = Color(0xFFE0E0E0);
 
     final OrderType orderType = controller.orderType;
@@ -27,7 +26,7 @@ class GroupMenuView extends GetView<GroupMenuController> {
         return Container(
           height: 80,
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          decoration: const BoxDecoration(color: Color(0xFFF47920)),
+          decoration: const BoxDecoration(color: Color(0xffc7834e)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -127,26 +126,12 @@ class GroupMenuView extends GetView<GroupMenuController> {
       body: Column(
         children: [
           /// 🖤 HEADER
-          // SizedBox(
-          //   height: 120,
-          //   child: Column(
-          //     children: [
-          //       Container(
-          //         height: 117,
-          //         width: double.infinity,
-          //         color: Colors.black,
-          //         child: Center(
-          //           child: Image.asset(
-          //             'assets/images/logo/homelogo.png',
-          //             height: 60,
-          //           ),
-          //         ),
-          //       ),
-          //       Container(height: 3, color: Colors.red),
-          //     ],
-          //   ),
-          // ),
           Header(orderType),
+          Container(
+            width: double.infinity,
+            height: 3,
+            color: const Color(0xffc7834e),
+          ),
 
           /// 🧩 BODY
           Expanded(

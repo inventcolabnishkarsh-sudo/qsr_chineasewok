@@ -44,7 +44,7 @@ class SplashView extends GetView<SplashController> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(16),
                             child: Image.asset(
-                              'assets/images/logo/logo.png',
+                              'assets/images/logo/logohome.png',
                               width: 120,
                               height: 120,
                             ),
@@ -84,7 +84,7 @@ class SplashView extends GetView<SplashController> {
                             return const CircularProgressIndicator(
                               strokeWidth: 2.5,
                               valueColor: AlwaysStoppedAnimation(
-                                Colors.deepOrange,
+                                Color(0xffc7834e),
                               ),
                             );
                           }

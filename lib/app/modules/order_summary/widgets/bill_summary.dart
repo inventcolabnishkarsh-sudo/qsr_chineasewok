@@ -27,20 +27,20 @@ class BillSummary extends StatelessWidget {
                 height: 44,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.red),
+                  border: Border.all(color: Color(0xffc7834e)),
                   color: Colors.white, // 👈 important difference
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
-                    Icon(Icons.add, color: Colors.red, size: 20),
+                    Icon(Icons.add, color: Color(0xffc7834e), size: 20),
                     SizedBox(width: 6),
                     Text(
                       'Add more items',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: Colors.red,
+                        color: Color(0xffc7834e),
                       ),
                     ),
                   ],
@@ -69,7 +69,7 @@ class BillSummary extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 10),
 
                   decoration: const BoxDecoration(
-                    color: Color(0xFFE67E22),
+                    color: Color(0xffc7834e),
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(14),
                     ),
@@ -133,7 +133,7 @@ class BillSummary extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w900,
-                          color: Color(0xFFE67E22),
+                          color: Color(0xffc7834e),
                         ),
                       ),
                       Text(
@@ -141,7 +141,7 @@ class BillSummary extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w900,
-                          color: Color(0xFFE67E22),
+                          color: Color(0xffc7834e),
                         ),
                       ),
                     ],
@@ -206,7 +206,7 @@ class BillSummary extends StatelessWidget {
                               : controller.placeOrder,
 
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFE67E22),
+                            backgroundColor: const Color(0xffc7834e),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -375,7 +375,7 @@ class _AppliedCoupon extends StatelessWidget {
         TextButton(
           onPressed: controller.removeCoupon,
           style: TextButton.styleFrom(
-            foregroundColor: Colors.deepOrange,
+            foregroundColor: Color(0xffc7834e),
             textStyle: const TextStyle(fontWeight: FontWeight.w700),
           ),
           child: const Text('🗑️ Remove Coupon'),

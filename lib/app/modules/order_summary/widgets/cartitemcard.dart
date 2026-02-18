@@ -108,7 +108,7 @@ class CartItemCard extends StatelessWidget {
                                 vertical: 10,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF6C343),
+                                color: const Color(0xffc7834e),
                                 borderRadius: BorderRadius.circular(18),
                                 border: Border.all(color: Colors.grey),
                               ),
@@ -130,7 +130,8 @@ class CartItemCard extends StatelessWidget {
                         Container(
                           height: 40,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF6C343),
+                            color: const Color(0xffc7834e),
+
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
@@ -139,6 +140,7 @@ class CartItemCard extends StatelessWidget {
                               IconButton(
                                 padding: EdgeInsets.zero,
                                 iconSize: 20,
+                                color: Colors.white,
                                 icon: const Icon(Icons.remove),
                                 onPressed: () => controller.decreaseItem(item),
                               ),
@@ -150,6 +152,7 @@ class CartItemCard extends StatelessWidget {
                                   '${item.quantity}',
                                   style: const TextStyle(
                                     fontSize: 16,
+                                    color: Colors.white,
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
@@ -158,6 +161,7 @@ class CartItemCard extends StatelessWidget {
                                 padding: EdgeInsets.zero,
                                 iconSize: 20,
                                 icon: const Icon(Icons.add),
+                                color: Colors.white,
                                 onPressed: () => controller.increaseItem(item),
                               ),
                             ],

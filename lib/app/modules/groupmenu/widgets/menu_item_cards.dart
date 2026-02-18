@@ -53,7 +53,7 @@ class MenuItemCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.orange.shade400, width: 2),
+        border: Border.all(color: const Color(0xffc7834e), width: 2),
       ),
       padding: const EdgeInsets.all(14),
       child: Column(
@@ -166,7 +166,7 @@ class MenuItemCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w900,
-                    color: Colors.deepOrange,
+                    color: Colors.black,
                   ),
                 ),
               ],
@@ -189,7 +189,7 @@ class MenuItemCard extends StatelessWidget {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFF6C343),
+                      backgroundColor: const Color(0xffc7834e),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -198,7 +198,7 @@ class MenuItemCard extends StatelessWidget {
                       'Add',
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.black,
+                        color: Colors.white,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -209,7 +209,7 @@ class MenuItemCard extends StatelessWidget {
               return Container(
                 height: 48,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF6C343),
+                  color: const Color(0xffc7834e),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -223,7 +223,7 @@ class MenuItemCard extends StatelessWidget {
                           controller.removeFromCart(menuId, 'full');
                         }
                       },
-
+                      color: Colors.white,
                       icon: const Icon(Icons.remove),
                     ),
                     Text(
@@ -231,6 +231,7 @@ class MenuItemCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
+                        color: Colors.white,
                       ),
                     ),
                     IconButton(
@@ -243,6 +244,7 @@ class MenuItemCard extends StatelessWidget {
                         }
                       },
                       icon: const Icon(Icons.add),
+                      color: Colors.white,
                     ),
                   ],
                 ),

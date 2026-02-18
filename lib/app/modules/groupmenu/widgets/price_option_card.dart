@@ -45,7 +45,7 @@ class PriceOptionCard extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onAdd,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFF6C343),
+                  backgroundColor: const Color(0xffc7834e),
                   foregroundColor: Colors.black,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -62,7 +62,7 @@ class PriceOptionCard extends StatelessWidget {
             Container(
               height: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFFF6C343),
+                color: const Color(0xffc7834e),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(

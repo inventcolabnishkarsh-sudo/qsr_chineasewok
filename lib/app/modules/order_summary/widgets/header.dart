@@ -12,35 +12,14 @@ class Header extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
-      color: Colors.black,
+      color: Colors.white,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Image.asset('assets/images/logo/homelogo.png', height: 48),
+          Image.asset('assets/images/logo/logohome.png', height: 48),
 
           Row(
             children: [
-              /// 🏷️ ORDER TYPE BADGE
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: isDineIn ? Colors.green : Colors.orange,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  isDineIn ? 'DINE IN' : 'TAKEAWAY',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 16),
-
               /// 🏠 HOME BUTTON
               Material(
                 color: Colors.transparent,
@@ -56,7 +35,7 @@ class Header extends StatelessWidget {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFFFF8C42), Color(0xFFFF6A00)],
+                        colors: [Color(0xffc7834e), Color(0xffc7834e)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
