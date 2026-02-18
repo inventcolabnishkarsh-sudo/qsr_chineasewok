@@ -400,22 +400,35 @@ class _ComboCustomizeViewState extends State<ComboCustomizeView> {
 
   Widget _Footer() {
     final controller = Get.find<GroupMenuController>();
-
+    final theme = Theme.of(context);
     final bool isEditMode = widget.editingItem != null;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey.shade300)),
+        border: Border(top: BorderSide(color: theme.dividerColor)),
       ),
       child: Row(
         children: [
           /// ❌ CANCEL
           Expanded(
             child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                side: BorderSide(color: Colors.red),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
               onPressed: Get.back,
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.red,
+                ),
+              ),
             ),
           ),
 
@@ -424,23 +437,49 @@ class _ComboCustomizeViewState extends State<ComboCustomizeView> {
           /// ✅ APPLY / UPDATE
           Expanded(
             child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.resolveWith<Color>((
+                  states,
+                ) {
+                  return Colors.white; // Always white
+                }),
+                foregroundColor: MaterialStateProperty.resolveWith<Color>((
+                  states,
+                ) {
+                  return Colors.green;
+                }),
+                side: MaterialStateProperty.all(
+                  const BorderSide(color: Colors.green, width: 2),
+                ),
+                elevation: MaterialStateProperty.all(0),
+                padding: MaterialStateProperty.all(
+                  const EdgeInsets.symmetric(vertical: 16),
+                ),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+              ),
               onPressed: isValid
                   ? () {
                       if (isEditMode) {
-                        // ✅ MODIFY EXISTING (NO REMOVE, NO ADD)
                         controller.updateExistingCombo(
                           widget.editingItem!,
                           selections,
                         );
                       } else {
-                        // ➕ ADD NEW COMBO
                         controller.addComboToCart(widget.comboItem, selections);
                       }
-
-                      Get.back(); // smooth close
+                      Get.back();
                     }
                   : null,
-              child: Text(isEditMode ? 'Update Combo' : 'Add to Cart'),
+              child: Text(
+                isEditMode ? 'Update Combo' : 'Add to Cart',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ),
         ],

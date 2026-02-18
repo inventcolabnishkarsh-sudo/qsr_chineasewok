@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:qsr_chineasewok_kiosk/app/modules/home/widgets/ordercard.dart';
 import 'home_controller.dart';
 
@@ -63,32 +64,69 @@ class HomeView extends GetView<HomeController> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // 📝 Kiosk heading
-                  const Text(
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Order ',
+                          style: GoogleFonts.pacifico(
+                            fontSize: 48,
+                            letterSpacing: 3,
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'Here',
+                          style: GoogleFonts.pacifico(
+                            fontSize: 48,
+                            letterSpacing: 3,
+                            color: Colors.red,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' !',
+                          style: GoogleFonts.pacifico(
+                            fontSize: 48,
+                            letterSpacing: 3,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  Text(
                     'Where would you like to eat?',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.0,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.2,
                       color: Colors.black,
                     ),
                   ),
 
                   const SizedBox(height: 40),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       OrderCard(
                         title: 'Take Away',
+                        subtitle: 'Take your favourite meals to go',
                         imagePath: 'assets/images/takeaway.jpg',
                         onTap: () {
                           controller.onOrderSelected(OrderType.takeaway);
                         },
                       ),
+
                       const SizedBox(width: 20),
                       OrderCard(
                         title: 'Dine In',
+                        subtitle: 'Enjoy fresh food in our outlet',
                         imagePath: 'assets/images/dinein.jpg',
                         onTap: () {
                           controller.onOrderSelected(OrderType.dineIn);
@@ -102,7 +140,7 @@ class HomeView extends GetView<HomeController> {
           ),
           const SizedBox(height: 40),
 
-          buildAdScroller(),
+          //   buildAdScroller(),
           buildFooter(),
         ],
       ),
@@ -148,7 +186,7 @@ class HomeView extends GetView<HomeController> {
 
   Widget buildAdScroller() {
     return SizedBox(
-      height: 250,
+      height: 500,
       child: PageView.builder(
         padEnds: false,
         controller: controller.adPageController,
@@ -158,7 +196,7 @@ class HomeView extends GetView<HomeController> {
           return SizedBox.expand(
             child: Image.asset(
               controller.ads[index],
-              fit: BoxFit.cover,
+              fit: BoxFit.fill,
               filterQuality: FilterQuality.low,
             ),
           );

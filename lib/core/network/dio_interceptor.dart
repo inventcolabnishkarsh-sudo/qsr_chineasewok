@@ -9,18 +9,6 @@ class DioInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    final hasInternet = await NetworkChecker.hasInternet();
-    if (!hasInternet) {
-      handler.reject(
-        DioException(
-          requestOptions: options,
-          error: ApiException('No internet connection'),
-          type: DioExceptionType.connectionError,
-        ),
-      );
-      return;
-    }
-
     options.headers.addAll({'Accept-Language': 'en', 'Device-Type': 'kiosk'});
 
     handler.next(options);
@@ -58,9 +46,12 @@ class DioInterceptor extends Interceptor {
         break;
 
       case DioExceptionType.badResponse:
-        message =
-            err.response?.data?['message'] ??
-            'Server error (${err.response?.statusCode})';
+        final data = err.response?.data;
+        if (data is Map && data['message'] != null) {
+          message = data['message'];
+        } else {
+          message = 'Server error (${err.response?.statusCode})';
+        }
         break;
 
       default:
@@ -80,6 +71,6 @@ class DioInterceptor extends Interceptor {
       error: apiException,
     );
 
-    handler.next(newError); // ✅ forward safely
+    handler.next(newError);
   }
 }
