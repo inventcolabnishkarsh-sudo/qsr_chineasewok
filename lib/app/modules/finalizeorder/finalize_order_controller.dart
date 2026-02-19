@@ -122,13 +122,11 @@ class FinalizeOrderController extends GetxController {
   }
 
   void _validate() {
-    final isTagValid = tagController.text.length == 4;
-
     final isMobileValid = RegExp(
       r'^[6-9]\d{9}$',
     ).hasMatch(mobileController.text);
 
-    canSubmit.value = isTagValid && isMobileValid;
+    canSubmit.value = isMobileValid;
   }
 
   @override
