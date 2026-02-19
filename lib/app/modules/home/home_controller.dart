@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../routes/app_routes.dart';
 
 enum OrderType { takeaway, dineIn }
@@ -14,6 +13,8 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
   Timer? adTimer;
   int currentAdIndex = 0;
 
+  bool _isNavigating = false; // ✅ Prevent double tap
+
   final List<String> ads = [
     'assets/images/ads/ads.png',
     'assets/images/ads/ads2.jpg',
@@ -24,7 +25,6 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
   void onInit() {
     super.onInit();
 
-    // Create animation controller (DO NOT START YET)
     rotationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 12),
@@ -35,7 +35,6 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
       end: 1,
     ).animate(rotationController);
 
-    // Create PageController only
     adPageController = PageController(viewportFraction: 1.0);
   }
 
@@ -43,7 +42,6 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
   void onReady() {
     super.onReady();
 
-    // ✅ Start animations AFTER first frame
     rotationController.repeat();
     _startAutoScroll();
   }
@@ -53,15 +51,14 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
       if (!adPageController.hasClients) return;
 
       currentAdIndex = (currentAdIndex + 1) % ads.length;
-
-      // ✅ NO animation → zero frame pressure
       adPageController.jumpToPage(currentAdIndex);
     });
   }
 
   void onOrderSelected(OrderType type) {
-    // ✅ Stop heavy animations BEFORE navigation
-    rotationController.stop();
+    if (_isNavigating) return; // ✅ prevent double tap
+    _isNavigating = true;
+
     adTimer?.cancel();
 
     Get.toNamed(AppRoutes.groupMenu, arguments: type);
@@ -70,8 +67,7 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
   @override
   void onClose() {
     adTimer?.cancel();
-    rotationController.stop();
-    rotationController.dispose();
+    rotationController.dispose(); // ✅ No stop() needed
     adPageController.dispose();
     super.onClose();
   }

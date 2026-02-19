@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -6,9 +8,12 @@ import 'app/modules/splash/menu_data_service.dart';
 import 'app/routes/app_pages.dart';
 import 'app/bindings/initial_binding.dart';
 import 'app/routes/app_routes.dart';
+import 'core/services/http_client.dart';
+import 'core/services/signalr_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides();
 
   final menuService = Get.put(MenuDataService(), permanent: true);
   await menuService.loadFromFile();
@@ -19,6 +24,13 @@ void main() async {
   /// 🔹 Lock app to PORTRAIT only
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   Get.put(IdleService());
+
+  /// 🔥 START SIGNALR ON APP LOAD
+  await Get.putAsync<SignalRService>(
+    () async => await SignalRService().init(),
+    permanent: true,
+  );
+
   runApp(const MyApp());
 }
 
@@ -44,4 +56,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

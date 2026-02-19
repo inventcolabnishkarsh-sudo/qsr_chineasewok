@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qsr_chineasewok_kiosk/app/modules/finalizeorder/widegts/customercheckincard.dart';
 import '../home/home_controller.dart';
-import '../order_summary/widgets/header.dart'; // for OrderType enum
+import '../order_summary/widgets/header.dart';
 
 class FinalizeOrderView extends StatelessWidget {
   const FinalizeOrderView({super.key});

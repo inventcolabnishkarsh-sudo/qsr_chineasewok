@@ -3,8 +3,12 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../../core/constants/api_constants.dart';
+import '../../../core/network/dio_client.dart';
+
 class MenuDataService extends GetxService {
   static const _fileName = 'menu_data.json';
+  final RxBool isUpdating = false.obs;
 
   Map<String, dynamic>? _menuData;
 
@@ -63,6 +67,27 @@ class MenuDataService extends GetxService {
     if (await file.exists()) {
       await file.delete();
       print('🗑 Menu data file deleted from: ${file.path}');
+    }
+  }
+
+  Future<void> refreshMenuFromServer() async {
+    try {
+      isUpdating.value = true;
+
+      print("🔄 Refreshing Menu From SignalR...");
+
+      final response = await DioClient().dio.get(
+        ApiConstants.manageOutlet,
+        queryParameters: {'OutletId': 1},
+      );
+
+      await setData(response.data);
+
+      print("✅ Menu Refreshed Successfully");
+    } catch (e) {
+      print("❌ Menu Refresh Failed: $e");
+    } finally {
+      isUpdating.value = false;
     }
   }
 }

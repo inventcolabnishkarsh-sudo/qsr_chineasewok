@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/globalwidgets/custom_keyboard.dart';
+import '../../../../core/utils/razorpay_web_screen.dart';
+import '../../home/home_controller.dart';
 import '../finalize_order_controller.dart';
 
 class CustomerCheckInCard extends GetView<FinalizeOrderController> {
@@ -35,19 +37,28 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
 
               const SizedBox(height: 30),
 
-              /// TAG
-              InkWell(
-                onTap: () => controller.setActive(InputTarget.tag),
-                child: Obx(
-                  () => _inputBox(
-                    hint: 'Enter Tag Number',
-                    controller: controller.tagController,
-                    isActive: controller.activeTarget.value == InputTarget.tag,
-                  ),
-                ),
-              ),
+              Obx(() {
+                if (controller.orderType.value == OrderType.takeaway) {
+                  return const SizedBox.shrink();
+                }
 
-              const SizedBox(height: 20),
+                return Column(
+                  children: [
+                    InkWell(
+                      onTap: () => controller.setActive(InputTarget.tag),
+                      child: Obx(
+                        () => _inputBox(
+                          hint: 'Enter Tag Number',
+                          controller: controller.tagController,
+                          isActive:
+                              controller.activeTarget.value == InputTarget.tag,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                );
+              }),
 
               /// MOBILE
               InkWell(
@@ -102,7 +113,18 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
                   width: double.infinity,
                   height: 54,
                   child: ElevatedButton(
-                    onPressed: controller.canSubmit.value ? () {} : null,
+                    onPressed: controller.canSubmit.value
+                        ? () {
+                            Get.dialog(
+                              RazorpayPopupScreen(
+                                amount: (controller.payableAmount.value * 100)
+                                    .round(),
+                                mobile: controller.mobileController.text,
+                              ),
+                              barrierDismissible: false,
+                            );
+                          }
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: controller.canSubmit.value
                           ? const Color(0xFFE67E22)
