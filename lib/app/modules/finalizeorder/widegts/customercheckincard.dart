@@ -11,7 +11,7 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-
+    final home = Get.find<HomeController>();
     return Center(
       child: Container(
         constraints: BoxConstraints(maxWidth: 520, maxHeight: height * 0.9),
@@ -38,10 +38,9 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
               const SizedBox(height: 30),
 
               Obx(() {
-                if (controller.orderType.value == OrderType.takeaway) {
+                if (home.orderType.value == OrderType.takeaway) {
                   return const SizedBox.shrink();
                 }
-
                 return Column(
                   children: [
                     InkWell(
@@ -213,54 +212,128 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
   Future<bool?> _showOrderTypeConfirmDialog(
     FinalizeOrderController controller,
   ) {
-    final isTakeaway = controller.orderType.value == OrderType.takeaway;
+    final home = Get.find<HomeController>();
+    final isTakeaway = home.orderType.value == OrderType.takeaway;
 
     return Get.dialog<bool>(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          "Confirm Order Type",
-          style: TextStyle(fontWeight: FontWeight.w800),
-        ),
-        content: Text(
-          isTakeaway
-              ? "You selected Takeaway.\nDo you want to change it to Dine-In?"
-              : "You selected Dine-In.\nDo you want to change it to Takeaway?",
-          style: const TextStyle(fontSize: 16),
-        ),
-        actionsPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 10,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(result: true),
-            child: const Text(
-              "No, Continue",
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE67E22),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+      Dialog(
+        backgroundColor: Colors.white,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 40),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Padding(
+          padding: const EdgeInsets.all(28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              /// 🏷 Title
+              const Text(
+                "Confirm Order Type",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
               ),
-            ),
-            onPressed: () {
-              /// 🔄 Toggle Order Type
-              controller.orderType.value = isTakeaway
-                  ? OrderType.dineIn
-                  : OrderType.takeaway;
 
-              Get.back(result: true);
-            },
-            child: const Text(
-              "Yes, Change",
-              style: TextStyle(fontWeight: FontWeight.w800),
-            ),
+              const SizedBox(height: 20),
+
+              /// 📌 Current Type
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 14,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF4F4F4),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      isTakeaway
+                          ? Icons.shopping_bag_outlined
+                          : Icons.restaurant_outlined,
+                      color: const Color(0xFFE67E22),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      isTakeaway ? "Takeaway Selected" : "Dine-In Selected",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              /// ❓ Question
+              Text(
+                isTakeaway
+                    ? "Would you like to switch to Dine-In?"
+                    : "Would you like to switch to Takeaway?",
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16, height: 1.4),
+              ),
+
+              const SizedBox(height: 30),
+
+              /// 🔘 Buttons
+              Row(
+                children: [
+                  /// Continue (Secondary)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back(result: true),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        side: BorderSide(color: Colors.grey.shade400),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: const Text(
+                        "Continue",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 14),
+
+                  /// Change (Primary)
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        home.orderType.value = isTakeaway
+                            ? OrderType.dineIn
+                            : OrderType.takeaway;
+
+                        Get.back(result: true);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFE67E22),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: const Text(
+                        "Change Order Type",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
       barrierDismissible: false,
     );

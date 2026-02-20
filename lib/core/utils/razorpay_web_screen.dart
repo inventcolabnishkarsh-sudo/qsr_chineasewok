@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../app/modules/home/home_controller.dart';
 import '../../app/modules/order_summary/order_summary_controller.dart';
 import 'package:intl/intl.dart';
 
@@ -12,7 +13,7 @@ class CustomPaymentPopup extends StatefulWidget {
 
 class _CustomPaymentPopupState extends State<CustomPaymentPopup> {
   bool _isProcessing = true;
-
+  final homeController = Get.find<HomeController>();
   @override
   void initState() {
     super.initState();
@@ -33,6 +34,7 @@ class _CustomPaymentPopupState extends State<CustomPaymentPopup> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: Colors.white,
       insetPadding: const EdgeInsets.all(40),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: SizedBox(
@@ -104,7 +106,14 @@ class _CustomPaymentPopupState extends State<CustomPaymentPopup> {
 
           _infoRow("Order ID", "#$orderId"),
           _infoRow("Date", formattedDate),
+          Obx(() {
+            final orderType = homeController.orderType.value;
 
+            return _infoRow(
+              "Order Type",
+              orderType == OrderType.dineIn ? "Dine-In" : "Takeaway",
+            );
+          }),
           const SizedBox(height: 12),
           const Divider(),
 

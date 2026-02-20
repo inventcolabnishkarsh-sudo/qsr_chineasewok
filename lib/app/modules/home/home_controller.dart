@@ -8,7 +8,7 @@ enum OrderType { takeaway, dineIn }
 class HomeController extends GetxController with SingleGetTickerProviderMixin {
   late AnimationController rotationController;
   late Animation<double> rotationAnimation;
-
+  Rx<OrderType> orderType = OrderType.takeaway.obs;
   late PageController adPageController;
   Timer? adTimer;
   int currentAdIndex = 0;
@@ -59,6 +59,9 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
   void onOrderSelected(OrderType type) async {
     if (_isNavigating) return;
     _isNavigating = true;
+
+    /// 🔥 Save globally
+    orderType.value = type;
 
     adTimer?.cancel();
 
