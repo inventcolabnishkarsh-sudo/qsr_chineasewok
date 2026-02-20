@@ -9,6 +9,8 @@ class SignalRService extends GetxService {
 
   final RxBool isConnected = false.obs;
 
+  /// ✅ NEW FLAG
+  final RxBool hasPendingUpdate = false.obs;
   Future<SignalRService> init() async {
     _hubConnection = HubConnectionBuilder()
         .withUrl(ApiConstants.signalR, options: HttpConnectionOptions())
@@ -29,12 +31,15 @@ class SignalRService extends GetxService {
 
         if (currentRoute == AppRoutes.home ||
             currentRoute == AppRoutes.idleScreen) {
-          print("📍 On Home/Idle → Refreshing Menu");
+          print("📍 On Home/Idle → Refreshing Now");
 
           final menuService = Get.find<MenuDataService>();
           await menuService.refreshMenuFromServer();
         } else {
-          print("⛔ Ignored UpdateMe (Not on Home/Idle)");
+          print("⛔ Not on Home/Idle → Marking Pending Update");
+
+          /// 🔥 MARK UPDATE AS PENDING
+          hasPendingUpdate.value = true;
         }
       }
     });
@@ -65,6 +70,33 @@ class SignalRService extends GetxService {
     await _startConnection();
 
     return this;
+  }
+
+  Future<void> checkPendingIfOnValidScreen() async {
+    if (!hasPendingUpdate.value) return;
+
+    final currentRoute = Get.currentRoute;
+
+    if (currentRoute == AppRoutes.home ||
+        currentRoute == AppRoutes.idleScreen) {
+      print("🚀 Processing Pending Update On Route Change");
+
+      hasPendingUpdate.value = false;
+
+      final menuService = Get.find<MenuDataService>();
+      await menuService.refreshMenuFromServer();
+    }
+  }
+
+  Future<void> checkAndProcessPendingUpdate() async {
+    if (!hasPendingUpdate.value) return;
+
+    print("🚀 Processing Pending Menu Update");
+
+    hasPendingUpdate.value = false;
+
+    final menuService = Get.find<MenuDataService>();
+    await menuService.refreshMenuFromServer();
   }
 
   Future<void> _startConnection() async {

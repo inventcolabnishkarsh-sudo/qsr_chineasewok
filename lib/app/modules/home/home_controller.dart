@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/services/signalr_service.dart';
 import '../../routes/app_routes.dart';
 
 enum OrderType { takeaway, dineIn }
@@ -42,9 +43,13 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
   void onReady() {
     super.onReady();
 
-    _isNavigating = false; // 🔥 reset when screen appears again
+    _isNavigating = false;
     rotationController.repeat();
     _startAutoScroll();
+
+    /// ✅ CHECK FOR PENDING UPDATE
+    final signalR = Get.find<SignalRService>();
+    signalR.checkAndProcessPendingUpdate();
   }
 
   void _startAutoScroll() {

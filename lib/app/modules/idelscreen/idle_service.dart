@@ -5,7 +5,7 @@ import '../../routes/app_routes.dart';
 class IdleService extends GetxService {
   Timer? _timer;
 
-  final Duration idleDuration = const Duration(minutes: 1);
+  final Duration idleDuration = const Duration(minutes: 5);
 
   void startTimer() {
     _timer?.cancel();

@@ -15,6 +15,10 @@ class MenuDataService extends GetxService {
   bool get hasData => _menuData != null;
   Map<String, dynamic>? get rawData => _menuData;
 
+  Map<String, dynamic>? _pendingMenuData;
+
+  bool get hasPendingUpdate => _pendingMenuData != null;
+
   /// 🔹 Extract GROUPS safely
   List<Map<String, dynamic>> get groups {
     if (_menuData == null) return [];
@@ -70,9 +74,19 @@ class MenuDataService extends GetxService {
     }
   }
 
+  bool _isRefreshing = false;
+
   Future<void> refreshMenuFromServer() async {
+    if (_isRefreshing) return;
+
+    _isRefreshing = true;
+
     try {
-      isUpdating.value = true;
+      final isOnHome = Get.currentRoute == '/home';
+
+      if (isOnHome) {
+        isUpdating.value = true; // 👈 show overlay ONLY on home
+      }
 
       print("🔄 Refreshing Menu From SignalR...");
 
@@ -81,13 +95,18 @@ class MenuDataService extends GetxService {
         queryParameters: {'OutletId': 1},
       );
 
+      _menuData = response.data;
       await setData(response.data);
 
       print("✅ Menu Refreshed Successfully");
     } catch (e) {
       print("❌ Menu Refresh Failed: $e");
     } finally {
-      isUpdating.value = false;
+      if (Get.currentRoute == '/home') {
+        isUpdating.value = false;
+      }
+
+      _isRefreshing = false;
     }
   }
 }

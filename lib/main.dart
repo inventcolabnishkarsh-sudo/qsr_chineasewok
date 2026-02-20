@@ -52,6 +52,13 @@ class MyApp extends StatelessWidget {
         initialBinding: InitialBinding(),
         initialRoute: AppRoutes.splash,
         getPages: AppPages.routes,
+        /// 🔥 ADD THIS
+        routingCallback: (routing) {
+          if (routing?.current != null) {
+            final signalR = Get.find<SignalRService>();
+            signalR.checkPendingIfOnValidScreen();
+          }
+        },
       ),
     );
   }
