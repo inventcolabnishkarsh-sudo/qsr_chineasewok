@@ -322,11 +322,12 @@ class GroupMenuView extends GetView<GroupMenuController> {
                               child: Scrollbar(
                                 controller: controller.scrollController,
                                 thumbVisibility:
-                                    true, // 👈 always visible (kiosk friendly)
+                                    true,
                                 thickness: 6,
                                 radius: const Radius.circular(8),
                                 child: SingleChildScrollView(
                                   controller: controller.scrollController,
+                                  primary: false,
                                   padding: const EdgeInsets.fromLTRB(
                                     24,
                                     8,
@@ -345,9 +346,8 @@ class GroupMenuView extends GetView<GroupMenuController> {
                                       }
 
                                       final itemWidth =
-                                          ((maxWidth - ((columns - 1) * 16)) /
-                                              columns) -
-                                          80;
+                                          (maxWidth - ((columns - 1) * 16)) /
+                                          columns;
 
                                       final grouped =
                                           controller.menuItemsGroupedByServes;

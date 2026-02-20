@@ -47,6 +47,7 @@ dependencies:
   razorpay_flutter: ^1.4.1
   signalr_netcore: ^1.4.4
   flutter_custom_keyboard: ^1.1.1
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

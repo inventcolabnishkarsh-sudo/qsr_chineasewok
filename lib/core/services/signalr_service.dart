@@ -11,14 +11,11 @@ class SignalRService extends GetxService {
 
   Future<SignalRService> init() async {
     _hubConnection = HubConnectionBuilder()
-        .withUrl(
-          ApiConstants.signalR,
-          options: HttpConnectionOptions(
-            transport: HttpTransportType.WebSockets,
-          ),
-        )
+        .withUrl(ApiConstants.signalR, options: HttpConnectionOptions())
         .withAutomaticReconnect()
         .build();
+    _hubConnection.serverTimeoutInMilliseconds = 30000;
+    _hubConnection.keepAliveIntervalInMilliseconds = 15000;
 
     /// 🔹 Listen to server events
     _hubConnection.on("ReceiveNotification", (arguments) async {

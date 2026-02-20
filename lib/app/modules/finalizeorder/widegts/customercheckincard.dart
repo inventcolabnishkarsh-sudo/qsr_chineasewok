@@ -114,17 +114,16 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
                   height: 54,
                   child: ElevatedButton(
                     onPressed: controller.canSubmit.value
-                        ? () {
-                            Get.dialog(
-                              RazorpayPopupScreen(
-                                amount: (controller.payableAmount.value * 100)
-                                    .round(),
-                                mobile: controller.mobileController.text,
-                              ),
-                              barrierDismissible: false,
-                            );
+                        ? () async {
+                            final shouldProceed =
+                                await _showOrderTypeConfirmDialog(controller);
+
+                            if (shouldProceed == true) {
+                              Get.dialog(const CustomPaymentPopup());
+                            }
                           }
                         : null,
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor: controller.canSubmit.value
                           ? const Color(0xFFE67E22)
@@ -208,6 +207,62 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<bool?> _showOrderTypeConfirmDialog(
+    FinalizeOrderController controller,
+  ) {
+    final isTakeaway = controller.orderType.value == OrderType.takeaway;
+
+    return Get.dialog<bool>(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          "Confirm Order Type",
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
+        content: Text(
+          isTakeaway
+              ? "You selected Takeaway.\nDo you want to change it to Dine-In?"
+              : "You selected Dine-In.\nDo you want to change it to Takeaway?",
+          style: const TextStyle(fontSize: 16),
+        ),
+        actionsPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 10,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: true),
+            child: const Text(
+              "No, Continue",
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFE67E22),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () {
+              /// 🔄 Toggle Order Type
+              controller.orderType.value = isTakeaway
+                  ? OrderType.dineIn
+                  : OrderType.takeaway;
+
+              Get.back(result: true);
+            },
+            child: const Text(
+              "Yes, Change",
+              style: TextStyle(fontWeight: FontWeight.w800),
+            ),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
     );
   }
 

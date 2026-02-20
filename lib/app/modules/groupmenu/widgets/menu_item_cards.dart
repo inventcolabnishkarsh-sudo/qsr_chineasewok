@@ -17,6 +17,7 @@ class MenuItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final menu = item['Menu']; // item = OutletMenu
+    final bool isActive = item['IsActive'] == true;
 
     // final bool isVeg = menu['VegNonVeg'] == 1;
     final value = menu['VegNonVeg'];
@@ -173,10 +174,32 @@ class MenuItemCard extends StatelessWidget {
             ),
           if (!isHalfAvailable || isCombo)
             Obx(() {
+              /// 🔴 FIRST CHECK — If not active, show SOLD OUT
+              if (!isActive) {
+                return Container(
+                  height: 48,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade600,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Text(
+                    'SOLD OUT',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                );
+              }
+
               final qty = isCombo
                   ? controller.getComboQuantity(menuId)
                   : controller.getQuantity(menuId, 'full');
 
+              /// 🟡 If active and qty == 0 → show Add
               if (qty == 0) {
                 return SizedBox(
                   height: 48,
@@ -206,6 +229,7 @@ class MenuItemCard extends StatelessWidget {
                 );
               }
 
+              /// 🟢 If active and qty > 0 → show quantity selector
               return Container(
                 height: 48,
                 decoration: BoxDecoration(
@@ -218,12 +242,11 @@ class MenuItemCard extends StatelessWidget {
                     IconButton(
                       onPressed: () {
                         if (isCombo) {
-                          controller.removeOneCombo(menuId); // ✅ FIX
+                          controller.removeOneCombo(menuId);
                         } else {
                           controller.removeFromCart(menuId, 'full');
                         }
                       },
-
                       icon: const Icon(Icons.remove),
                     ),
                     Text(
@@ -236,7 +259,6 @@ class MenuItemCard extends StatelessWidget {
                     IconButton(
                       onPressed: () {
                         if (isCombo) {
-                          // 👈 re-open customizer for NEW combo
                           controller.openComboCustomizer(item);
                         } else {
                           controller.addToCart(item, portion: 'full');

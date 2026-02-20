@@ -1,122 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import '../../app/modules/order_summary/order_summary_controller.dart';
+import 'package:intl/intl.dart';
 
-class RazorpayPopupScreen extends StatefulWidget {
-  final int amount; // in paise
-  final String mobile;
-
-  const RazorpayPopupScreen({
-    super.key,
-    required this.amount,
-    required this.mobile,
-  });
+class CustomPaymentPopup extends StatefulWidget {
+  const CustomPaymentPopup({super.key});
 
   @override
-  State<RazorpayPopupScreen> createState() => _RazorpayPopupScreenState();
+  State<CustomPaymentPopup> createState() => _CustomPaymentPopupState();
 }
 
-class _RazorpayPopupScreenState extends State<RazorpayPopupScreen> {
-  late final WebViewController _controller;
+class _CustomPaymentPopupState extends State<CustomPaymentPopup> {
+  bool _isProcessing = true;
 
   @override
   void initState() {
     super.initState();
 
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..addJavaScriptChannel(
-        'PaymentChannel',
-        onMessageReceived: (message) {
-          if (message.message == "success") {
-            _handlePaymentSuccess();
-          } else if (message.message == "cancel") {
-            _handlePaymentCancel();
-          }
-        },
-      )
-      ..loadHtmlString(_htmlContent());
-  }
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        _isProcessing = false;
+      });
 
-  String _htmlContent() {
-    return '''
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-      </head>
-      <body onload="startPayment()" style="margin:0;">
-        <script>
-          function startPayment() {
-            var options = {
-              "key": "rzp_test_LTysJoN6nEVmkt",
-              "amount": "${widget.amount}",
-              "currency": "INR",
-              "name": "Chinese Wok",
-              "description": "Order Payment",
-              "prefill": {
-                "contact": "${widget.mobile}",
-                "email": "customer@chinesewok.com"
-              },
-              "theme": {
-                "color": "#E67E22"
-              },
-              "handler": function (response){
-                PaymentChannel.postMessage("success");
-              },
-              "modal": {
-                "ondismiss": function(){
-                  PaymentChannel.postMessage("cancel");
-                }
-              }
-            };
-
-            var rzp = new Razorpay(options);
-            rzp.open();
-          }
-        </script>
-      </body>
-    </html>
-    ''';
-  }
-
-  void _handlePaymentCancel() async {
-    Get.back(); // close razorpay popup
-
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    Get.offAllNamed("/home"); // move directly to home
-  }
-
-  void _handlePaymentSuccess() async {
-    Get.back(); // close payment popup
-
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    Get.dialog(
-      Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Padding(
-          padding: const EdgeInsets.all(30),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Icon(Icons.check_circle, color: Colors.green, size: 80),
-              SizedBox(height: 20),
-              Text(
-                "Payment Successful!",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        ),
-      ),
-      barrierDismissible: false,
-    );
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    Get.offAllNamed("/home"); // change if needed
+      Future.delayed(const Duration(seconds: 5), () {
+        final orderController = Get.find<OrderSummaryController>();
+        orderController.groupController.clearCart();
+        Get.offAllNamed("/home");
+      });
+    });
   }
 
   @override
@@ -125,14 +36,162 @@ class _RazorpayPopupScreenState extends State<RazorpayPopupScreen> {
       insetPadding: const EdgeInsets.all(40),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: SizedBox(
-        width: 500,
-        height: 650,
-        child: Column(
-          children: [
-            /// 🌐 WEBVIEW
-            Expanded(child: WebViewWidget(controller: _controller)),
-          ],
+        width: 520,
+        height: 700,
+        child: Padding(
+          padding: const EdgeInsets.all(28),
+          child: _isProcessing
+              ? _buildProcessingView()
+              : _buildSuccessReceiptView(),
         ),
+      ),
+    );
+  }
+
+  /// 🔄 Processing View
+  Widget _buildProcessingView() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const [
+        CircularProgressIndicator(
+          strokeWidth: 4,
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xffc7834e)),
+        ),
+        SizedBox(height: 30),
+        Text(
+          "Processing Payment...",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+        ),
+      ],
+    );
+  }
+
+  /// ✅ Success + Receipt
+  Widget _buildSuccessReceiptView() {
+    final orderController = Get.find<OrderSummaryController>();
+    final items = orderController.items;
+    final now = DateTime.now();
+    final formattedDate = DateFormat('dd MMM yyyy, hh:mm a').format(now);
+    final orderId = now.millisecondsSinceEpoch.toString().substring(7);
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// ✅ Success Header
+          const Center(
+            child: Icon(Icons.check_circle, color: Colors.green, size: 70),
+          ),
+          const SizedBox(height: 12),
+          const Center(
+            child: Text(
+              "Payment Successful",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+          const Divider(),
+
+          /// 🏢 Store Info
+          const Center(
+            child: Text(
+              "CHINESE WOK",
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+            ),
+          ),
+          const SizedBox(height: 6),
+
+          _infoRow("Order ID", "#$orderId"),
+          _infoRow("Date", formattedDate),
+
+          const SizedBox(height: 12),
+          const Divider(),
+
+          /// 🛒 Items
+          const Text(
+            "Items",
+            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+          ),
+          const SizedBox(height: 10),
+
+          ...items.map((item) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(flex: 4, child: Text(item.name)),
+                  Expanded(
+                    child: Text(
+                      "x${item.quantity}",
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Expanded(
+                    child: Text("₹${item.total}", textAlign: TextAlign.right),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+
+          const SizedBox(height: 10),
+          const Divider(),
+
+          _amountRow("Subtotal", orderController.subTotal),
+          _amountRow("Discount", -orderController.couponDiscount),
+          _amountRow("GST (5%)", orderController.gstAmount),
+
+          const SizedBox(height: 6),
+          const Divider(),
+
+          _amountRow("TOTAL", orderController.payableAmount, isBold: true),
+
+          const SizedBox(height: 20),
+
+          const Center(
+            child: Text(
+              "Returning to home in 5 seconds...",
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [Text(title), Text(value)],
+      ),
+    );
+  }
+
+  Widget _amountRow(String title, dynamic value, {bool isBold = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
+              fontSize: isBold ? 16 : 14,
+            ),
+          ),
+          Text(
+            "₹$value",
+            style: TextStyle(
+              fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
+              fontSize: isBold ? 16 : 14,
+            ),
+          ),
+        ],
       ),
     );
   }

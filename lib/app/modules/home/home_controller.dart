@@ -42,6 +42,7 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
   void onReady() {
     super.onReady();
 
+    _isNavigating = false; // 🔥 reset when screen appears again
     rotationController.repeat();
     _startAutoScroll();
   }
@@ -55,13 +56,15 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
     });
   }
 
-  void onOrderSelected(OrderType type) {
-    if (_isNavigating) return; // ✅ prevent double tap
+  void onOrderSelected(OrderType type) async {
+    if (_isNavigating) return;
     _isNavigating = true;
 
     adTimer?.cancel();
 
-    Get.toNamed(AppRoutes.groupMenu, arguments: type);
+    await Get.toNamed(AppRoutes.groupMenu, arguments: type);
+
+    _isNavigating = false; // 🔥 reset after coming back
   }
 
   @override
