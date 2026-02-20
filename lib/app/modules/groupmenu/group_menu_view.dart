@@ -330,9 +330,8 @@ class GroupMenuView extends GetView<GroupMenuController> {
                                       }
 
                                       final itemWidth =
-                                          ((maxWidth - ((columns - 1) * 16)) /
-                                              columns) -
-                                          80;
+                                          (maxWidth - ((columns - 1) * 16)) /
+                                          columns;
 
                                       final grouped =
                                           controller.menuItemsGroupedByServes;

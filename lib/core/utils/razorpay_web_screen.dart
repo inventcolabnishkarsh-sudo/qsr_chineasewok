@@ -25,13 +25,20 @@ class _RazorpayWebScreenState extends State<RazorpayWebScreen> {
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.white)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onWebResourceError: (error) {
+            print("Web error: ${error.description}");
+          },
+        ),
+      )
       ..addJavaScriptChannel(
         'PaymentChannel',
         onMessageReceived: (message) {
           if (message.message == "success") {
             _handlePaymentSuccess();
-          } else if (message.message == "cancel" ||
-              message.message == "failed") {
+          } else {
             _handlePaymentCancel();
           }
         },
@@ -49,53 +56,63 @@ class _RazorpayWebScreenState extends State<RazorpayWebScreen> {
 
   String _htmlContent() {
     return '''
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    </head>
-    <body onload="startPayment()">
-      <script>
-        function startPayment() {
-          var options = {
-            "key": "rzp_test_LTysJoN6nEVmkt",
-            "amount": "${widget.amount}",
-            "currency": "INR",
-            "name": "Home Essentials Pvt Ltd.",
-            "description": "Order Payment",
-            "prefill": {
-              "contact": "${widget.mobile}",
-              "email": "test@homeessentials.com"
-            },
-            "theme": {
-              "color": "#c7834e"
-            },
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  </head>
+  <body>
+    <script>
 
-            // ✅ SUCCESS
-            "handler": function (response){
-              PaymentChannel.postMessage("success");
-            },
-
-            // ❌ FAILURE
-            "modal": {
-              "ondismiss": function(){
-                PaymentChannel.postMessage("cancel");
-              }
+      function openCheckout() {
+        var options = {
+          "key": "rzp_test_LTysJoN6nEVmkt",
+          "amount": "${widget.amount}",
+          "currency": "INR",
+          "name": "Home Essentials Pvt Ltd.",
+          "description": "Order Payment",
+          "prefill": {
+            "contact": "${widget.mobile}",
+            "email": "test@homeessentials.com"
+          },
+          "theme": {
+            "color": "#c7834e"
+          },
+          "handler": function (response){
+            PaymentChannel.postMessage("success");
+          },
+          "modal": {
+            "ondismiss": function(){
+              PaymentChannel.postMessage("cancel");
             }
-          };
+          }
+        };
 
-          var rzp = new Razorpay(options);
+        var rzp = new Razorpay(options);
 
-          rzp.on('payment.failed', function (response){
+        rzp.on('payment.failed', function (response){
+          PaymentChannel.postMessage("failed");
+        });
+
+        rzp.open();
+      }
+
+      // 🔥 Wait until Razorpay script is available
+      window.onload = function() {
+        setTimeout(function() {
+          if (typeof Razorpay !== "undefined") {
+            openCheckout();
+          } else {
             PaymentChannel.postMessage("failed");
-          });
+          }
+        }, 500);
+      };
 
-          rzp.open();
-        }
-      </script>
-    </body>
-  </html>
-  ''';
+    </script>
+  </body>
+</html>
+''';
   }
 
   void _handlePaymentSuccess() async {

@@ -106,19 +106,7 @@ class CustomerCheckInCard extends GetView<FinalizeOrderController> {
                   child: ElevatedButton(
                     onPressed: controller.canSubmit.value
                         ? () {
-                            final orderController =
-                                Get.find<OrderSummaryController>();
-
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => RazorpayWebScreen(
-                                  amount: (orderController.payableAmount * 100)
-                                      .round(),
-                                  mobile: controller.mobileController.text,
-                                ),
-                              ),
-                            );
+                            controller.completeOrder();
                           }
                         : null,
 
