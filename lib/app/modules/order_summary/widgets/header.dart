@@ -15,79 +15,101 @@ class Header extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        /// 🔥 TOP HEADER BAR
         Container(
-          padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
-          color: Colors.black,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Image.asset('assets/images/logo/homelogo.png', height: 48),
-
-              Row(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          decoration: const BoxDecoration(color: Colors.black),
+          child: SafeArea(
+            bottom: false,
+            child: SizedBox(
+              height: 80,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  /// 🏷️ ORDER TYPE BADGE
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isDineIn ? Colors.green : Colors.orange,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      isDineIn ? 'DINE IN' : 'TAKEAWAY',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
+                  /// 🏷️ LOGO
+                  Row(
+                    children: [
+                      Image.asset(
+                        'assets/images/logo/homelogo.png',
+                        height: 50,
                       ),
-                    ),
+                    ],
                   ),
 
-                  const SizedBox(width: 16),
-
-                  /// 🏠 HOME BUTTON
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.of(
-                          context,
-                        ).popUntil((route) => route.isFirst);
-                      },
-                      borderRadius: BorderRadius.circular(16),
-                      splashColor: Colors.white.withOpacity(0.2),
-                      highlightColor: Colors.transparent,
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.all(12),
+                  /// RIGHT SECTION
+                  Row(
+                    children: [
+                      /// 🟢 ORDER TYPE BADGE (Premium Pill)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
+                          gradient: LinearGradient(
                             colors: [Color(0xFFFF8C42), Color(0xFFFF6A00)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
                           ),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(30),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.orange.withOpacity(0.4),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
+                              color: Colors.black.withOpacity(0.25),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
                             ),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.home_rounded,
-                          color: Colors.white,
-                          size: 26,
+                        child: Text(
+                          isDineIn ? 'DINE IN' : 'TAKEAWAY',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
-                    ),
+
+                      const SizedBox(width: 24),
+
+                      /// 🏠 HOME BUTTON (Premium Circular Style)
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(30),
+                          onTap: () {
+                            Navigator.of(
+                              context,
+                            ).popUntil((route) => route.isFirst);
+                          },
+                          child: Ink(
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFFF8C42), Color(0xFFFF6A00)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.orange.withOpacity(0.4),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.home_rounded,
+                              color: Colors.white,
+                              size: 26,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
 
@@ -142,7 +164,7 @@ class _ScrollingTextState extends State<_ScrollingText>
       },
       child: const Center(
         child: Text(
-          "🎉 Hurrey! There is an update in the menu. If you want new items, go to Home.",
+          "🎉 Hurreeyy! A new menu update is available. Head to the Home screen to update now.",
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,

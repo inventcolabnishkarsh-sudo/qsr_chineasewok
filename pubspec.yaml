@@ -93,6 +93,7 @@ flutter:
     - assets/images/ads/ads3.jpg
     - assets/images/homebackground.jpg
     - assets/videos/promo.mp4
+    - assets/images/soldout.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

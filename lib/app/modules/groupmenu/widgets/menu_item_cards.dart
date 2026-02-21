@@ -50,228 +50,292 @@ class MenuItemCard extends StatelessWidget {
       } catch (_) {}
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.orange.shade400, width: 2),
-      ),
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          /// 🔝 TOP ROW
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.orange.shade400, width: 2),
+          ),
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              VegNonVegIcon(isVeg: isVeg),
+              /// 🔝 TOP ROW
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  VegNonVegIcon(isVeg: isVeg),
 
-              Expanded(
-                child: (showServesHeader && isCombo)
-                    ? Text(
-                        menu['ComboTitle'] ?? '',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFF243A8F),
+                  Expanded(
+                    child: (showServesHeader && isCombo)
+                        ? Text(
+                            menu['ComboTitle'] ?? '',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF243A8F),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+
+                  const Icon(Icons.info_outline, size: 22, color: Colors.black),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              SizedBox(
+                height: 140,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    /// 🖼️ FOOD IMAGE
+                    imageBytes != null
+                        ? Image.memory(imageBytes!, fit: BoxFit.contain)
+                        : Image.asset(
+                            'assets/images/menu_placeholder.png',
+                            fit: BoxFit.contain,
+                          ),
+
+                    /// 🔴 SOLD OUT OVERLAY
+                    if (!isActive)
+                      Align(
+                        alignment: AlignmentGeometry.topLeft,
+                        child: Image.asset(
+                          'assets/images/soldout.png',
+                          height: 80,
+                          fit: BoxFit.contain,
                         ),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-
-              const Icon(Icons.info_outline, size: 22, color: Colors.black),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          /// 🖼️ IMAGE
-          SizedBox(
-            height: 140, //  controls card height safely
-            child: Center(
-              child: imageBytes != null
-                  ? Image.memory(imageBytes!, fit: BoxFit.contain)
-                  : Image.asset(
-                      'assets/images/menu_placeholder.png',
-                      fit: BoxFit.contain,
-                    ),
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          /// 🧾 DESCRIPTION STRIP
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF4EFEF),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              menu['MenuItemName'] ?? '',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF243A8F),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          /// 💰 PRICE
-          // const SizedBox(height: 20),
-          if (isHalfAvailable && !isCombo)
-            Row(
-              children: [
-                /// HALF
-                Expanded(
-                  child: Obx(() {
-                    final qty = controller.getQuantity(menuId, 'half');
-                    return PriceOptionCard(
-                      label: 'Half',
-                      price: halfPrice,
-                      qty: qty,
-                      onAdd: () => controller.addToCart(item, portion: 'half'),
-                      onRemove: () => controller.removeFromCart(menuId, 'half'),
-                    );
-                  }),
+                      ),
+                  ],
                 ),
+              ),
+              const SizedBox(height: 12),
 
-                const SizedBox(width: 12),
-
-                /// FULL
-                Expanded(
-                  child: Obx(() {
-                    final qty = controller.getQuantity(menuId, 'full');
-                    return PriceOptionCard(
-                      label: 'Full',
-                      price: fullPrice,
-                      qty: qty,
-                      onAdd: () => controller.addToCart(item, portion: 'full'),
-                      onRemove: () => controller.removeFromCart(menuId, 'full'),
-                    );
-                  }),
+              /// 🧾 DESCRIPTION STRIP
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 12,
                 ),
-              ],
-            )
-          else
-            Column(
-              children: [
-                /// 💰 PRICE
-                Text(
-                  '₹$fullPrice',
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF4EFEF),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  menu['MenuItemName'] ?? '',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.deepOrange,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF243A8F),
                   ),
                 ),
-              ],
-            ),
-          if (!isHalfAvailable || isCombo)
-            Obx(() {
-              /// 🔴 FIRST CHECK — If not active, show SOLD OUT
-              if (!isActive) {
-                return Container(
-                  height: 48,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade600,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text(
-                    'SOLD OUT',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                );
-              }
+              ),
 
-              final qty = isCombo
-                  ? controller.getComboQuantity(menuId)
-                  : controller.getQuantity(menuId, 'full');
+              const SizedBox(height: 10),
 
-              /// 🟡 If active and qty == 0 → show Add
-              if (qty == 0) {
-                return SizedBox(
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (isCombo) {
-                        controller.openComboCustomizer(item);
-                      } else {
-                        controller.addToCart(item, portion: 'full');
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFF6C343),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Add',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
-                );
-              }
+              /// 💰 PRICE
+              if (isHalfAvailable && !isCombo)
+                !isActive
+                    ? Container(
+                        height: 48,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade600,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text(
+                          'SOLD OUT',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      )
+                    : Row(
+                        children: [
+                          /// HALF
+                          Expanded(
+                            child: Obx(() {
+                              final qty = controller.getQuantity(
+                                menuId,
+                                'half',
+                              );
+                              return PriceOptionCard(
+                                label: 'Half',
+                                price: halfPrice,
+                                qty: qty,
+                                onAdd: () =>
+                                    controller.addToCart(item, portion: 'half'),
+                                onRemove: () =>
+                                    controller.removeFromCart(menuId, 'half'),
+                              );
+                            }),
+                          ),
 
-              /// 🟢 If active and qty > 0 → show quantity selector
-              return Container(
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF6C343),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          const SizedBox(width: 12),
+
+                          /// FULL
+                          Expanded(
+                            child: Obx(() {
+                              final qty = controller.getQuantity(
+                                menuId,
+                                'full',
+                              );
+                              return PriceOptionCard(
+                                label: 'Full',
+                                price: fullPrice,
+                                qty: qty,
+                                onAdd: () =>
+                                    controller.addToCart(item, portion: 'full'),
+                                onRemove: () =>
+                                    controller.removeFromCart(menuId, 'full'),
+                              );
+                            }),
+                          ),
+                        ],
+                      )
+              else
+                Column(
                   children: [
-                    IconButton(
-                      onPressed: () {
-                        if (isCombo) {
-                          controller.removeOneCombo(menuId);
-                        } else {
-                          controller.removeFromCart(menuId, 'full');
-                        }
-                      },
-                      icon: const Icon(Icons.remove),
-                    ),
+                    /// 💰 PRICE
                     Text(
-                      '$qty',
+                      '₹$fullPrice',
+                      textAlign: TextAlign.center,
                       style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.deepOrange,
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        if (isCombo) {
-                          controller.openComboCustomizer(item);
-                        } else {
-                          controller.addToCart(item, portion: 'full');
-                        }
-                      },
-                      icon: const Icon(Icons.add),
                     ),
                   ],
                 ),
-              );
-            }),
-        ],
-      ),
+              if (!isHalfAvailable || isCombo)
+                Obx(() {
+                  /// 🔴 FIRST CHECK — If not active, show SOLD OUT
+                  if (!isActive) {
+                    return Container(
+                      height: 48,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade600,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Text(
+                        'SOLD OUT',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    );
+                  }
+
+                  final qty = isCombo
+                      ? controller.getComboQuantity(menuId)
+                      : controller.getQuantity(menuId, 'full');
+
+                  /// 🟡 If active and qty == 0 → show Add
+                  if (qty == 0) {
+                    return SizedBox(
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (isCombo) {
+                            controller.openComboCustomizer(item);
+                          } else {
+                            controller.addToCart(item, portion: 'full');
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFF6C343),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'Add',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  /// 🟢 If active and qty > 0 → show quantity selector
+                  return Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF6C343),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            if (isCombo) {
+                              controller.removeOneCombo(menuId);
+                            } else {
+                              controller.removeFromCart(menuId, 'full');
+                            }
+                          },
+                          icon: const Icon(Icons.remove),
+                        ),
+                        Text(
+                          '$qty',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            if (isCombo) {
+                              controller.openComboCustomizer(item);
+                            } else {
+                              controller.addToCart(item, portion: 'full');
+                            }
+                          },
+                          icon: const Icon(Icons.add),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+            ],
+          ),
+        ),
+
+        /// 🔴 BLUR OVERLAY WHEN SOLD OUT
+        if (!isActive)
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: 1, // 🔽 reduced from 4 → 2
+                  sigmaY: 1,
+                ),
+                child: Container(
+                  color: Colors.white.withOpacity(0.12), // 🔽 lighter overlay
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

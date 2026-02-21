@@ -12,6 +12,7 @@ class PromoVideoBox extends StatefulWidget {
 class _PromoVideoBoxState extends State<PromoVideoBox> {
   late final VideoPlayerController _videoController;
   ChewieController? _chewieController;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -20,7 +21,7 @@ class _PromoVideoBoxState extends State<PromoVideoBox> {
 
   @override
   void deactivate() {
-    _videoController.pause(); // 🔥 release buffers
+    _videoController.pause();
     super.deactivate();
   }
 
